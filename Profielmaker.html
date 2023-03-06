@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Registratieformulier</title>
+    <link rel="stylesheet" href="robbe.css">
+</head>
+
+<body style="background-color: rgba(74, 74, 74, 0.169)">
+    <h1>Registratieformulier</h1>
+    <form method="POST" action="https://formspree.io/f/mleznekz">
+        <label for="naam">Naam:</label>
+        <input type="text" id="naam" name="naam" required><br><br>
+
+        <label for="adres">Adres:</label>
+        <input type="text" id="adres" name="adres" required><br><br>
+
+        <label for="telefoonnummer">Telefoonnummer:</label>
+        <input type="tel" id="telefoonnummer" name="telefoonnummer" required><br><br>
+
+        <label for="leeftijd">Leeftijd:</label>
+        <input type="number" id="leeftijd" name="leeftijd" required><br><br>
+
+        <label for="functie">Functie:</label>
+        <select id="functie" name="functie">
+            <option value="optie1">Developer</option>
+            <option value="optie2">Normale klant</option>
+            <option value="optie3">Geen toegang</option>
+        </select><br><br>
+        <input id="submit" type="submit" class="btn" value="Verzenden">
+    </form>
+</body>
+
+</html>
