@@ -1,0 +1,113 @@
+.navMenu[b-v7s2op0ngm] {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: linear-gradient(to bottom right, var(--backdrop-color-1), var(--backdrop-color-2));
+  padding: 10px;
+}
+
+.iconBox[b-v7s2op0ngm] {
+  border-radius: 50%;
+  background-color: #a6a6a6;
+  padding: 10px;
+  min-width: 50px;
+  min-height: 50px;
+  text-decoration: none;
+}
+
+.title[b-v7s2op0ngm] {
+  color: var(--main-font-white);
+  text-decoration: none;
+  font-size: 24px;
+  font-weight: bold;
+  transform: translateY(10px);
+}
+
+.iconImg[b-v7s2op0ngm]{
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-10px,-10px);
+  border-color: rgb(77, 8, 77);
+  border-width: 2px;
+  border-style: solid;
+}
+
+.links[b-v7s2op0ngm] {
+  display: flex;
+}
+
+.item[b-v7s2op0ngm] {
+  margin: 0 10px;
+
+}
+.navText[b-v7s2op0ngm]{
+  margin-top: auto;
+  color: var(--main-font-white);
+  font-size: 18px;
+  font-weight: bold;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.navText:hover[b-v7s2op0ngm] {
+  color: #e6e6e6;
+}
+
+.loginBox[b-v7s2op0ngm] {
+  display: flex;
+  align-items: center;
+}
+
+.currentUser[b-v7s2op0ngm]{
+  font-size: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+  margin-right: 20px;
+  color: var(--main-font-white)
+}
+
+.login[b-v7s2op0ngm] {
+  border-radius: 20px;
+  border: none;
+  background-color: var(--backdrop-color-white);
+  color: var(--main-font-blue);
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 16px;
+  margin-right: 10px;
+}
+
+.login:hover[b-v7s2op0ngm] {
+  cursor: pointer;
+  background-color: var(--main-font-blue);
+  color: var(--main-font-white);
+}
+
+.loging[b-v7s2op0ngm] {
+  border-radius: 20px;
+  border: none;
+  background-color: var(--backdrop-color-white);
+  color: var(--main-font-white);
+  font-size: 18px;
+  font-weight: bold;
+  padding: 8px 16px;
+}
+
+.loging:hover[b-v7s2op0ngm] {
+  cursor: pointer;
+  background-color: var(--main-font-blue);
+  color: var(--main-font-white);
+}
+
+.loginpopup[b-v7s2op0ngm] {
+  position: absolute;
+  top: 50px;
+  right: 20px;
+  background-color: var(--main-font-white);
+  border-radius: 10px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  padding: 20px;
+  z-index: 1;
+}

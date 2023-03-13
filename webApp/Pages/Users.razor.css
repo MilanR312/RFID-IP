@@ -1,0 +1,48 @@
+.qTable {
+    margin-left: 50px;
+    border-collapse: collapse;
+    width: calc(100% - 240px);
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.qTableHead {
+    background-color: rgba(102, 0, 153, 0.8);
+    color: #fff;
+}
+
+.qTable td,
+.qTable th {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.qTable th {
+    background-color: #dcd6f7;
+}
+
+.qTable tr {
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+    min-height: 20px;
+    max-height: 50px;
+}
+.qTableHead > tr {
+    height: 70px;
+}
+.qTableBody tr:hover {
+    border-color: #6d6b9c;
+    /*height: 70px;*/
+}
+
+.qTable tr:hover td {
+    border-color: #6d6b9c;
+}
+.qTableBody {
+    overflow-y: scroll;
+}
+.loading {
+    margin: 20px;
+    font-weight: bold;
+    color: #6d6b9c;
+}

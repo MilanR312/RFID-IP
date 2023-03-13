@@ -1,0 +1,91 @@
+@page "/"
+@using Models
+@inject IArtikelService ArtikelService
+
+<div class="filter-container">
+    <div class="filters">
+        <EditForm Model=@req OnSubmit="handleSub" style="width: 100%">
+            <div class="filterItems">
+                <label class="filterItem">
+                    <p>id:</p>
+                    <InputText @bind-Value="req.key" style="width: 100%"/>
+                </label>
+                <label class="filterItem">
+                    <p>naam:</p>
+                    <InputText @bind-Value="req.naam" style="width: 100%"/>
+                </label>
+                <label class="filterItem">
+                    <p>beschikbaar:</p>
+                    <InputSelect @bind-Value="req.operatorType" style="width: 40%;  min-width: 80px">
+                    <option value="">disable</option>
+                        <option value=">">></option>
+                        <option value="<"> &lt; </option>
+                        <option value=">=">>=</option>
+                        <option value="<=">&lt;=</option>
+                    </InputSelect>
+                    <InputNumber @bind-Value="req.beschikbaar" style="width: 100%" hidden=@(req.operatorType == "")/>
+                </label>
+                <label class="filterItem">
+                    <p>prijs:</p>
+                    <InputSelect @bind-Value="req.operatorType2" style="width: 40%;  min-width: 80px">
+                        <option value="">disable</option>
+                        <option value=">">></option>
+                        <option value="<"> &lt; </option>
+                        <option value=">=">>=</option>
+                        <option value="<=">&lt;=</option>
+                    </InputSelect>
+                    <InputNumber @bind-Value="req.price" style="width: 100%" hidden=@(req.operatorType2 == "")/>
+                </label>
+                <label class="filterItem">
+                    <p>soort:</p>
+                    <InputText @bind-Value="req.soort" style="width: 100%"/>
+                </label>
+            </div>
+            <input type="submit" class="filterSubmit">
+        </EditForm>
+    </div>
+    @if (artikels == null){
+        <p class="loading">loading ...</p>
+    } else {
+        <table class="qTable">
+            <thead class="qTableHead">
+                <tr>
+                    <td>code</td>
+                    <td>naam</td>
+                    <td>beschikbaar</td>
+                    <td>prijs</td>
+                    <td>soort</td>
+                </tr>
+            </thead>
+            <tbody class="qTableBody">
+                @foreach (var artikel in artikels)
+                {
+                    <tr>
+                        <td>@artikel.code</td>
+                        <td>@artikel.naam</td>
+                        <td>@artikel.beschikbaar</td>
+                        <td>@artikel.prijs</td>
+                        <td>@artikel.soort</td>
+                    </tr>
+                }
+            </tbody>
+
+        </table>
+    }
+</div>
+
+
+@code {
+    private List<Artikel>? artikels;
+    private ArtikelRequest req = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        artikels = await ArtikelService.getArtikelList();
+    }
+    protected async void handleSub(){
+        artikels = await ArtikelService.getArtikel(req);
+        StateHasChanged();
+    }
+
+}

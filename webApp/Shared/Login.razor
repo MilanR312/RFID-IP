@@ -1,0 +1,29 @@
+@inject IGebruikerService GebruikerService
+
+<EditForm Model=@loginForm OnSubmit=@handleSubmit>
+    <div class="loginform">
+        <label>
+        Naam:
+        <InputText id="naam" @bind-Value="loginForm.naam" class="loginInput"/>
+    </label>
+    <input id="submit" type="submit" class="btn" value="Verzenden">
+
+    </div>
+    
+    
+
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public EventCallback<Models.Gebruiker> onLoggedIn{ get; set; }
+    private Models.Gebruiker loginForm = new();
+
+    private async void handleSubmit(){
+        Console.WriteLine(loginForm.naam);
+        var user = await GebruikerService.getGebruiker(loginForm.naam);
+        await onLoggedIn.InvokeAsync(user);
+        //add to postgres here
+    }
+}

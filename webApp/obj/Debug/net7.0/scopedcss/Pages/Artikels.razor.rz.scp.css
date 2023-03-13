@@ -1,0 +1,114 @@
+.filter-container[b-w6srgfrzh8] {
+    display: flex;
+    flex-direction: row;
+ /*   height: 100vh;*/
+  }
+  
+  .filters[b-w6srgfrzh8] {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /*background-color: #f2f2f2;*/
+    padding: 10px;
+    min-width: 100px;
+    max-width: 150px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .filters:hover[b-w6srgfrzh8] {
+    max-width: 300px;
+  }
+  
+  .filterItems[b-w6srgfrzh8] {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .filterItem[b-w6srgfrzh8] {
+    margin-bottom: 10px;
+  }
+  
+  .filterItem p[b-w6srgfrzh8] {
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .filterInputSelect[b-w6srgfrzh8] {
+    margin-left: 5px;
+  }
+  
+  .filterInput:focus[b-w6srgfrzh8],
+  .filterInputSelect:focus[b-w6srgfrzh8] {
+    outline: none;
+    border-color: #6d6b9c;
+  }
+  
+  .filterSubmit[b-w6srgfrzh8] {
+    margin-top: 10px;
+    background-color: var(--button-color-unpressed);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .filterSubmit:hover[b-w6srgfrzh8]{
+    background-color: var(--button-color-pressed);
+  }
+  
+  .qTable[b-w6srgfrzh8] {
+    margin-left: 50px;
+    border-collapse: collapse;
+    width: calc(100% - 240px);
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.qTableHead[b-w6srgfrzh8] {
+    background-color: rgba(102, 0, 153, 0.8);
+    color: #fff;
+}
+
+.qTable td[b-w6srgfrzh8],
+.qTable th[b-w6srgfrzh8] {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.qTable th[b-w6srgfrzh8] {
+    background-color: #dcd6f7;
+}
+
+.qTable tr[b-w6srgfrzh8] {
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+    min-height: 20px;
+    max-height: 50px;
+}
+.qTableHead > tr[b-w6srgfrzh8] {
+    height: 70px;
+}
+.qTableBody tr:hover[b-w6srgfrzh8] {
+    border-color: #6d6b9c;
+    border-width: 2px;
+    z-index: 2;
+
+    /*height: 70px;*/
+}
+
+.qTable tr:hover td[b-w6srgfrzh8] {
+    border-color: #6d6b9c;
+}
+.qTableBody[b-w6srgfrzh8] {
+    overflow-y: scroll;
+}
+.loading[b-w6srgfrzh8] {
+    margin: 20px;
+    font-weight: bold;
+    color: #6d6b9c;
+}
+
+
+  

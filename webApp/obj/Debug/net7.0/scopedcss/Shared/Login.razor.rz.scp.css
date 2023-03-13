@@ -1,0 +1,45 @@
+/* Global styles */
+
+
+.loginform[b-1c01wl9t1e] {
+    max-width: 500px;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 10px;
+    /*box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);*/
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .loginform label[b-1c01wl9t1e]{
+    padding-bottom: 5px;
+    font-weight: bold;
+  }
+
+  .loginInput[b-1c01wl9t1e]{
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  input[type="submit"][b-1c01wl9t1e] {
+    background-color: var(--button-color-unpressed);
+    color: VAR(--main-font-white);
+    cursor: pointer;
+    margin-left: 10px;
+  }
+  
+  input[type="submit"]:hover[b-1c01wl9t1e] {
+    background-color: var(--button-color-pressed);
+  }
+
+  
+  /* Responsive styles */
+  @media only screen and (max-width: 600px) {
+    .loginform[b-1c01wl9t1e] {
+      padding: 20px;
+    }
+  }

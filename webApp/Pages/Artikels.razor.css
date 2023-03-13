@@ -1,0 +1,114 @@
+.filter-container {
+    display: flex;
+    flex-direction: row;
+ /*   height: 100vh;*/
+  }
+  
+  .filters {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    /*background-color: #f2f2f2;*/
+    padding: 10px;
+    min-width: 100px;
+    max-width: 150px;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .filters:hover {
+    max-width: 300px;
+  }
+  
+  .filterItems {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .filterItem {
+    margin-bottom: 10px;
+  }
+  
+  .filterItem p {
+    margin: 0;
+    font-weight: bold;
+  }
+  
+  .filterInputSelect {
+    margin-left: 5px;
+  }
+  
+  .filterInput:focus,
+  .filterInputSelect:focus {
+    outline: none;
+    border-color: #6d6b9c;
+  }
+  
+  .filterSubmit {
+    margin-top: 10px;
+    background-color: var(--button-color-unpressed);
+    color: #fff;
+    border: none;
+    border-radius: 3px;
+    padding: 5px 10px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .filterSubmit:hover{
+    background-color: var(--button-color-pressed);
+  }
+  
+  .qTable {
+    margin-left: 50px;
+    border-collapse: collapse;
+    width: calc(100% - 240px);
+    max-height: 70vh;
+    overflow: auto;
+}
+
+.qTableHead {
+    background-color: rgba(102, 0, 153, 0.8);
+    color: #fff;
+}
+
+.qTable td,
+.qTable th {
+    border: 1px solid #ccc;
+    padding: 10px;
+}
+
+.qTable th {
+    background-color: #dcd6f7;
+}
+
+.qTable tr {
+    border: 1px solid #ccc;
+    transition: border-color 0.3s;
+    min-height: 20px;
+    max-height: 50px;
+}
+.qTableHead > tr {
+    height: 70px;
+}
+.qTableBody tr:hover {
+    border-color: #6d6b9c;
+    border-width: 2px;
+    z-index: 2;
+
+    /*height: 70px;*/
+}
+
+.qTable tr:hover td {
+    border-color: #6d6b9c;
+}
+.qTableBody {
+    overflow-y: scroll;
+}
+.loading {
+    margin: 20px;
+    font-weight: bold;
+    color: #6d6b9c;
+}
+
+
+  

@@ -1,0 +1,47 @@
+/* Global styles */
+
+
+.loginform[b-yev33tggtv] {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 30px;
+    background-color: #fff;
+    border-radius: 10px;
+    /*box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);*/
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .loginform label[b-yev33tggtv]{
+    padding-bottom: 5px;
+  }
+
+  label[b-yev33tggtv] {
+    font-weight: bold;
+  }
+  .loginInput[b-yev33tggtv]{
+    width: 100%;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    margin-bottom: 20px;
+    font-size: 16px;
+  }
+  
+  input[type="submit"][b-yev33tggtv] {
+    background-color: var(--button-color-unpressed);
+    color: #fff;
+    cursor: pointer;
+  }
+  
+  input[type="submit"]:hover[b-yev33tggtv] {
+    background-color: var(--button-color-pressed);
+  }
+
+  
+  /* Responsive styles */
+  @media only screen and (max-width: 600px) {
+    .loginform[b-yev33tggtv] {
+      padding: 20px;
+    }
+  }

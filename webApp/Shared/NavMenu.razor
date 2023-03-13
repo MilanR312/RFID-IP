@@ -1,0 +1,78 @@
+﻿@inject IWebHostEnvironment environment
+
+<div class="navMenu">
+    <a class="iconBox" href="">
+        @if (imageExists){
+            <img class="iconImg" alt="rfiq" src=@logo>
+        } else {
+            <p class="title">RFID</p>
+        }
+    </a>
+ 
+    <div class="links">
+        <div class="item">
+            <NavLink href="counter" style="text-decoration: none">
+                <p class="navText"> Log </p>
+            </NavLink>
+        </div>
+        @if(currentUser != null && currentUser.functie == "dev"){
+            <div class="item">
+                <NavLink href="users" style="text-decoration: none">
+                    <p class="navText">
+                        Users
+                    </p>
+                </NavLink>
+            </div>
+            
+        }
+    </div>
+
+    <div class="loginBox">
+        @if(currentUser == null){
+            <button class="login" @onclick=@(_ => setForm(2))>
+                login
+            </button>
+            <button class="login" @onclick=@(_ => setForm(1))>
+                register
+            </button>
+        } else {
+            <p class="currentUser">@currentUser.naam</p>
+            <button class="login" @onclick="logOut">
+                logOut
+            </button>
+        }
+        <div class="loginpopup" hidden=@(form != 1)>
+            <Register onLoggedIn="login"/>
+        </div>
+        <div class="loginpopup" hidden=@(form != 2)>
+            <Login onLoggedIn="login"/>
+        </div>
+    </div>
+</div>
+
+
+
+
+@code {
+    private int form; //0 of, 1 register, 2 login
+    private Models.Gebruiker? currentUser = null;
+
+    private bool imageExists = false;
+    private string logo = "images/rfid.jpg";
+    protected override void OnInitialized()
+    {
+        var wwwroot = environment.WebRootPath;
+        imageExists = File.Exists(Path.Combine(wwwroot,logo));
+    }
+    private void login(Models.Gebruiker user){
+        currentUser = user;
+        form = 0;
+    }
+    private void setForm(int id){
+        form = (form == id) ? 0: id;
+    }
+    private void logOut(){
+        currentUser = null;
+    }
+
+}

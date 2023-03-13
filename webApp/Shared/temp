@@ -1,0 +1,260 @@
+*{
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    text-decoration: none;
+}
+
+
+
+
+
+  /* Styling for the iconBox */
+.iconBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f8f8;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    margin: 20px auto;
+  }
+  
+  .title {
+    font-size: 24px;
+    color: #444444;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+  }
+  
+  /* Styling for the links */
+  .links {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  
+.links>.item {
+    font-size: 20px;
+    color: #444444;
+    text-decoration: none;
+    font-weight: bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 0 10px;
+    padding: 10px;
+    transition: all 0.3s ease-in-out;
+    border-bottom: 2px solid transparent;
+  }
+  
+  .links>.item:hover {
+    border-bottom: 2px solid #444444;
+  }
+  
+  /* Styling for the loginBox */
+  .loginBox {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    margin: 20px auto;
+  }
+  
+  .login {
+    font-size: 20px;
+    color: #ffffff;
+    background-color: #444444;
+    border: none;
+    border-radius: 5px;
+    padding: 10px 20px;
+    margin: 0 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .login:hover {
+    background-color: #666666;
+  }
+  
+  .loginpopup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffffff;
+    border: 1px solid #444444;
+    border-radius: 5px;
+    padding: 20px;
+    z-index: 1;
+  }
+
+
+
+  <div class="filter-container">
+    <EditForm Model=@req OnSubmit="handleSub">
+        <div class="filters">
+            <div class="filterItems">
+                <label class="filterItem">
+                    id:
+                    <InputText @bind-Value="req.key" class="filterInput" />
+                </label>
+                <label class="filterItem">
+                    
+                naam:
+                <InputText @bind-Value="req.naam" class="filterInput"/>
+            </label>
+            <label class="filterItem">
+                beschikbaar:
+                <InputSelect @bind-Value="req.operatorType" class="filterInputSelect">
+                    <option value="">disable</option>
+                    <option value=">">></option>
+                    <option value="<"> &lt; </option>
+                    <option value=">=">>=</option>
+                    <option value="<=">&lt;=</option>
+                </InputSelect>
+                <InputNumber @bind-Value="req.beschikbaar" class="filterInput"/>
+            </label>
+            <label class="filterItem">
+                prijs:
+                <InputSelect @bind-Value="req.operatorType2" class="filterInputSelect">
+                    <option value="">disable</option>
+                    <option value=">">></option>
+                    <option value="<"> &lt; </option>
+                    <option value=">=">>=</option>
+                    <option value="<=">&lt;=</option>
+                </InputSelect>
+                <InputNumber @bind-Value="req.price" class="filterInput"/>
+            </label>
+            <label class="filterItem">
+                soort:
+                <InputText @bind-Value="req.soort" class="filterInput"/>
+            </label>
+        </div>
+        <input type="submit" class="filterSubmit">
+    </EditForm>
+</div>
+@if (artikels == null){
+    <p class="loading">loading ...</p>
+} else {
+    <table class="qTable">
+        <thead class="qTableHead">
+            <tr>
+                <td>code</td>
+                <td>naam</td>
+                <td>beschikbaar</td>
+                <td>prijs</td>
+                <td>soort</td>
+            </tr>
+        </thead>
+        <tbody class="qTableBody">
+            @foreach (var artikel in artikels)
+            {
+                <tr>
+                    <td>@artikel.code</td>
+                    <td>@artikel.naam</td>
+                    <td>@artikel.beschikbaar</td>
+                    <td>@artikel.prijs</td>
+                    <td>@artikel.soort</td>
+                </tr>
+            }
+        </tbody>
+        
+    </table>
+}
+
+
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 200px;
+  transition: width 0.3s;
+}
+
+.filters:hover {
+  width: 300px;
+}
+
+.filterItems {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+}
+
+.filterItem {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.filterItem p {
+  margin: 0;
+}
+
+.filterInput,
+.filterInputSelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 5px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+.filterInputSelect {
+  background-color: #fff;
+}
+
+.filterInput:focus,
+.filterInputSelect:focus {
+  outline: none;
+  border-color: #555;
+}
+
+.filterSubmit {
+  margin: 10px;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 5px;
+  background-color: #007acc;
+  color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.filterSubmit:hover {
+  background-color: #005f99;
+}
+
+.qTable {
+  margin-left: 20px;
+  width: calc(100% - 220px);
+  border-collapse: collapse;
+  overflow: auto;
+}
+
+.qTableHead {
+  background-color: rgba(102, 0, 153, 0.8);
+  color: #fff;
+}
+
+.qTableHead td {
+  padding: 10px;
+}
+
+.qTableBody tr {
+  border: 1px solid #ccc;
+  transition: border-color 0.3s;
+}
+
+.qTableBody tr:hover {
+  border-color: rgba(102, 0, 153, 0.8);
+}
+
+.qTableBody td {
+  padding: 10px;
+}

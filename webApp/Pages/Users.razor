@@ -1,0 +1,41 @@
+﻿@page "/users/"
+@using Models
+@inject IGebruikerService GebruikerService
+
+@if (gebruikers == null){
+  <p class="loading">Loading</p>
+} else {
+  <table class="qTable">
+    <thead class="qTableHead">
+      <tr>
+        <td>naam</td>
+        <td>leeftijd</td>
+        <td>adres</td>
+        <td>telefoon</td>
+        <td>functie</td>
+      </tr>
+    </thead>
+    <tbody class="qTableBody">
+      @foreach (var gebruiker in gebruikers)
+      {
+        <tr>
+            <td>@gebruiker.naam</td>
+            <td>@gebruiker.leeftijd</td>
+            <td>@gebruiker.adres</td>
+            <td>@gebruiker.telefoonNummer</td>
+            <td>@gebruiker.functie</td>
+        </tr>
+      }
+    </tbody>
+  </table>
+}
+
+@code {
+  private List<Gebruiker>? gebruikers;
+
+  protected override async Task OnInitializedAsync()
+  {
+    gebruikers = await GebruikerService.getGebruikerList();
+  }
+
+}

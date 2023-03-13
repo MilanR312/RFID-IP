@@ -1,0 +1,48 @@
+@inject IGebruikerService GebruikerService
+
+<EditForm Model=@registerform OnSubmit=@handleSubmit>
+    <div class="loginform">
+        <label>
+        Naam:
+        <InputText id="naam" @bind-Value="registerform.naam" class="loginInput"/>
+    </label>
+    <label>
+        Adress:
+        <InputText id="adress" @bind-Value=registerform.adres class="loginInput"/>
+    </label>
+    <label>
+        telefoonnummer:
+        <InputText id="telefoonnummer" @bind-Value="registerform.telefoonNummer" class="loginInput"/>
+    </label>
+    <label>
+        Leeftijd:
+        <InputNumber id="leeftijd" @bind-Value="registerform.leeftijd" class="loginInput"/>
+    </label>
+    <label>
+        functie:
+        <InputSelect @bind-Value="registerform.functie">
+            <option value="dev"> developer </option>
+            <option value="klant"> klant </option>
+            <option value="geen toegang"> geen toegang</option>
+        </InputSelect>
+    </label>
+    <input id="submit" type="submit" class="btn" value="Verzenden">
+
+    </div>
+    
+    
+
+</EditForm>
+
+
+@code {
+    [Parameter]
+    public EventCallback<Models.Gebruiker> onLoggedIn{ get; set; }
+    private Models.Gebruiker registerform = new();
+
+    private void handleSubmit(){
+        GebruikerService.CreateGebruiker(registerform);
+        onLoggedIn.InvokeAsync(registerform);
+        //add to postgres here
+    }
+}
