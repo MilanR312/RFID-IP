@@ -1,0 +1,23 @@
+(kicad_sch (version 20211123) (generator eeschema)
+
+  (uuid df2f319b-5926-430c-a5ec-049c7db2699b)
+
+  (paper "A4")
+
+  (lib_symbols
+  )
+
+
+  (hierarchical_label "Vcc" (shape input) (at 35.56 39.37 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid 11baa4f9-c661-46f8-b28c-922560f3f5a8)
+  )
+  (hierarchical_label "GND" (shape input) (at 35.56 52.07 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid 31700ec3-ca41-4ecb-86d1-173421bcfb8f)
+  )
+  (hierarchical_label "DeurSensor" (shape input) (at 35.56 41.91 0)
+    (effects (font (size 1.27 1.27)) (justify left))
+    (uuid 556f1bdb-a375-48dc-8dfb-4b1aff0bee16)
+  )
+)
