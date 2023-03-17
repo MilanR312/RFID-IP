@@ -1,5 +1,6 @@
 ﻿@inject IWebHostEnvironment environment
-
+@inject ProtectedLocalStorage storage
+@inject NavigationManager nav
 <div class="navMenu">
     <a class="iconBox" href="">
         @if (imageExists){
@@ -11,11 +12,25 @@
  
     <div class="links">
         <div class="item">
+            <NavLink href="Artikels" style="text-decoration: none">
+                <p class="navText"> Artikels</p>
+            </NavLink>
+        </div>
+        
+        <div class="item">
             <NavLink href="counter" style="text-decoration: none">
                 <p class="navText"> Log </p>
             </NavLink>
         </div>
+        
         @if(currentUser != null && currentUser.functie == "dev"){
+            <div class="item">
+                <NavLink href="devices" style="text-decoration: none">
+                    <p class="navText">
+                        devices
+                    </p>
+                </NavLink>
+            </div>
             <div class="item">
                 <NavLink href="users" style="text-decoration: none">
                     <p class="navText">
@@ -65,14 +80,27 @@
         imageExists = File.Exists(Path.Combine(wwwroot,logo));
     }
     private void login(Models.Gebruiker user){
+        storage.SetAsync("user", user);
         currentUser = user;
         form = 0;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender){
+            var result = await storage.GetAsync<Models.Gebruiker>("user");
+            if (result.Success)
+                currentUser = result.Value;
+            StateHasChanged();
+        }
     }
     private void setForm(int id){
         form = (form == id) ? 0: id;
     }
     private void logOut(){
+        storage.DeleteAsync("user");
         currentUser = null;
+        nav.NavigateTo("/",true);
     }
 
 }

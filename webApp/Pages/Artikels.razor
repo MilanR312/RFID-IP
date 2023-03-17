@@ -1,6 +1,7 @@
-@page "/"
+@page "/Artikels"
 @using Models
 @inject IArtikelService ArtikelService
+@inject ProtectedLocalStorage storage
 
 <div class="filter-container">
     <div class="filters">
@@ -81,6 +82,8 @@
 
     protected override async Task OnInitializedAsync()
     {
+        //var user = await storage.GetAsync<Models.Gebruiker>("user");
+        //Console.WriteLine(user.Success);
         artikels = await ArtikelService.getArtikelList();
     }
     protected async void handleSub(){

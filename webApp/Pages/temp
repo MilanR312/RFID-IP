@@ -1,0 +1,88 @@
+.deviceGrid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    max-width: 100%;
+  }
+  
+  .deviceBox {
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    margin: 10px;
+    position: relative;
+    width: 23%;
+  }
+  
+  .deviceBox:hover {
+    border: 2px solid purple;
+  }
+  
+  .deviceContent {
+    width: 90%;
+    float: left;
+  }
+  
+  .deviceStatus {
+    background-color: green;
+    border-radius: 0px 10px 10px 0px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 10%;
+  }
+  
+  .deviceTitleBox {
+    border-bottom: 1px solid black;
+    margin: 0;
+    padding: 10px;
+  }
+  
+  .deviceSmallContentBox {
+    padding: 10px;
+  }
+  
+  .devicePopUpContentBox {
+    background-color: white;
+    border: 1px solid black;
+    border-radius: 10px;
+    box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.16);
+    display: none;
+    height: 300px;
+    left: 50%;
+    position: fixed;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    z-index: 999;
+  }
+  
+  .devicePopUpTitleBox {
+    border-bottom: 1px solid black;
+    margin: 0;
+    padding: 10px;
+  }
+  
+  .devicePopUpStatus {
+    background-color: green;
+    border-radius: 50%;
+    display: inline-block;
+    height: 10px;
+    margin-right: 10px;
+    width: 10px;
+  }
+  
+  .devicePopUpDescription {
+    padding: 10px;
+  }
+  
+  .devicePopUpButtons {
+    margin-top: auto;
+    padding: 10px;
+  }
+  
+  .devicePopUpButton {
+    display: inline-block;
+    margin-right: 10px;
+  }

@@ -1,0 +1,87 @@
+@page "/devices"
+@using Models
+@using System.Net
+@using System.Net.Sockets
+@inject ProtectedLocalStorage storage
+@inject IDeviceService deviceService
+@inject TcpListener tcp
+
+<div class="deviceGrid">
+    @if (devices == null){
+        <p class="deviceError"> no devices to show</p>
+    } else {
+        int i = 0;
+        @foreach (var esp32 in devices)
+        {
+            i++;
+            int index = i;
+            <div class="deviceBox" @onclick="(() => changePopUp(index))">
+                <div class="deviceContent">
+                    <div class="deviceTitleBox">
+                        <p>@esp32.name</p>
+                    </div>
+                    <div class="deviceSmallContentBox">
+                        <p>@esp32.location</p>
+                    </div>
+                </div>
+                <div class="deviceStatus">
+
+                </div>
+            </div>
+            <div class="devicePopUpContentBox" hidden=@(i != popupwindow)>
+                    <div class="exitButton" @onclick="(() => changePopUp(0))">X</div>
+                    <div class="devicePopUpTitleBox">
+                        <div class="devicePopUpStatus" />
+                        <p>@esp32.name</p>
+                    </div>
+                    <div class="devicePopUpDescription">
+                        <p>@esp32.ip @esp32.port</p>
+                        <p>@esp32.location</p>
+                    </div>
+                    <div class="devicePopUpButtons">
+                        <div class="devicePopUpButtonBox">
+                            <div class="devicePopUpButtonStatus" />
+                            <button class="devicePopUpButton"> toggle button </button> 
+                        </div>
+                        <div class="devicePopUpButtonBox">
+                            <div class="devicePopUpButtonStatus" />
+                            <button class="devicePopUpButton"> toggle door</button>
+                        </div>
+                    </div>
+                </div>
+        }
+    }
+
+    
+</div>
+
+
+@code {
+
+
+    private Gebruiker? currentuser;
+
+    private List<esp32>? devices;
+    
+    
+    private int popupwindow = 0;
+    
+    protected void changePopUp(int index){
+        Console.WriteLine(index);
+        popupwindow = index;
+    }
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        var user = await storage.GetAsync<Gebruiker>("user");
+        if (user.Success){
+            currentuser = user.Value;
+        }
+        if (firstRender) StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        devices = await deviceService.getDeviceList();
+        await tcp.AcceptTcpClientAsync();
+        Console.WriteLine("connected");
+    }
+}
