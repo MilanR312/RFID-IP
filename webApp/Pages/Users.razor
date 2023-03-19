@@ -1,8 +1,11 @@
 ﻿@page "/users/"
 @using Models
 @inject IGebruikerService GebruikerService
+@inject ProtectedLocalStorage storage
 
-@if (gebruikers == null){
+@if (currentuser == null || currentuser.functie != "dev"){
+  <p class="loading">no acces</p>
+} else if (gebruikers == null) {
   <p class="loading">Loading</p>
 } else {
   <table class="qTable">
@@ -33,9 +36,21 @@
 @code {
   private List<Gebruiker>? gebruikers;
 
+  private Gebruiker? currentuser;
+
+
   protected override async Task OnInitializedAsync()
   {
-    gebruikers = await GebruikerService.getGebruikerList();
+    gebruikers = await GebruikerService.getGebruikerList(); 
   }
+  protected override async Task OnAfterRenderAsync(bool firstRender)
+  {
+    var user = await storage.GetAsync<Gebruiker>("user");
+    if (user.Success){
+      currentuser = user.Value;
+    }
+    if (firstRender) StateHasChanged();
+  }
+
 
 }

@@ -32,6 +32,8 @@
 }
 .qTableBody tr:hover {
     border-color: #6d6b9c;
+    border-width: 2px;
+    z-index: 2;
     /*height: 70px;*/
 }
 

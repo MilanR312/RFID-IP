@@ -65,3 +65,4 @@
 /home/milan/Desktop/RFID-IP/webApp/obj/Debug/net7.0/scopedcss/Pages/Artikels.razor.rz.scp.css
 /home/milan/Desktop/RFID-IP/webApp/obj/Debug/net7.0/scopedcss/Pages/Users.razor.rz.scp.css
 /home/milan/Desktop/RFID-IP/webApp/obj/Debug/net7.0/scopedcss/Shared/Login.razor.rz.scp.css
+/home/milan/Desktop/RFID-IP/webApp/obj/Debug/net7.0/scopedcss/Pages/Devices.razor.rz.scp.css

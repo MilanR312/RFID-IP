@@ -1,7 +1,8 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Dapper;
-using Syncfusion.Blazor;
+using System.Net;
+using System.Net.Sockets;
 
 DefaultTypeMap.MatchNamesWithUnderscores = true;
 
@@ -15,15 +16,14 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddSingleton<IDbService,DbService>();
 builder.Services.AddScoped<IGebruikerService,GebruikerService>();
 builder.Services.AddScoped<IArtikelService, ArtikelService>();
-//builder.Services.AddSyncfusionBlazor();
-
-//builder.Services.AddScoped<IDbService, DbService>();
-//builder.Services.AddScoped<IGebruikerService, GebruikerService>();
+builder.Services.AddScoped<IDeviceService, DeviceService>();
+builder.Services.AddSingleton<TcpListener>( _ => new(IPAddress.Any,8090));
 
 
 var app = builder.Build();
 
-
+var listener = app.Services.GetRequiredService<TcpListener>();
+listener.Start(10);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

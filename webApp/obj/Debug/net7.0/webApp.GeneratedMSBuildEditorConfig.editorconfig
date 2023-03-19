@@ -24,6 +24,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQ291bnRlci5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[/home/milan/Desktop/RFID-IP/webApp/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [/home/milan/Desktop/RFID-IP/webApp/Shared/SurveyPrompt.razor]
 build_metadata.AdditionalFiles.TargetPath = U2hhcmVkL1N1cnZleVByb21wdC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
@@ -35,6 +39,10 @@ build_metadata.AdditionalFiles.CssScope =
 [/home/milan/Desktop/RFID-IP/webApp/Pages/Artikels.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvQXJ0aWtlbHMucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = b-w6srgfrzh8
+
+[/home/milan/Desktop/RFID-IP/webApp/Pages/Devices.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRGV2aWNlcy5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-rvs7wk2tvz
 
 [/home/milan/Desktop/RFID-IP/webApp/Pages/Users.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVXNlcnMucmF6b3I=
