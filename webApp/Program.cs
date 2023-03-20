@@ -18,12 +18,14 @@ builder.Services.AddScoped<IGebruikerService,GebruikerService>();
 builder.Services.AddScoped<IArtikelService, ArtikelService>();
 builder.Services.AddScoped<IDeviceService, DeviceService>();
 builder.Services.AddSingleton<TcpListener>( _ => new(IPAddress.Any,8090));
-
+builder.Services.AddSingleton<ITCPService, TCPService>();
 
 var app = builder.Build();
 
 var listener = app.Services.GetRequiredService<TcpListener>();
 listener.Start(10);
+var tcpServ = app.Services.GetRequiredService<ITCPService>();
+tcpServ.start();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

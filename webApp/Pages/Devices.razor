@@ -81,7 +81,12 @@
     protected override async Task OnInitializedAsync()
     {
         devices = await deviceService.getDeviceList();
-        await tcp.AcceptTcpClientAsync();
-        Console.WriteLine("connected");
+        var connection = await tcp.AcceptTcpClientAsync();
+        Console.WriteLine("connected?");
+        var connStream = connection.GetStream();
+        String message = "get";
+        byte[] messageBytes = System.Text.Encoding.ASCII.GetBytes(message);
+        connStream.Write(messageBytes, 0, messageBytes.Length);
+        Console.WriteLine("send");
     }
 }

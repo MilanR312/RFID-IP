@@ -1,0 +1,5 @@
+(sym_lib_table
+  (version 7)
+  (lib (name "Testlib")(type "KiCad")(uri "/home/milan/Desktop/RFID-IP/electronics/symlib/Testlib.kicad_sym")(options "")(descr ""))
+  (lib (name "goot")(type "KiCad")(uri "/home/milan/Desktop/RFID-IP/electronics/symlib/goot.kicad_sym")(options "")(descr ""))
+)
