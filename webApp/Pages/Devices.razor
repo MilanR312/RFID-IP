@@ -4,10 +4,10 @@
 @using System.Net.Sockets
 @inject ProtectedLocalStorage storage
 @inject IDeviceService deviceService
-@inject TcpListener tcp
+@inject ITCPService tcp
 
 <div class="deviceGrid">
-    @if (devices == null){
+    @if (devices == null || devices.Count == 0){
         <p class="deviceError"> no devices to show</p>
     } else {
         int i = 0;
@@ -18,34 +18,37 @@
             <div class="deviceBox" @onclick="(() => changePopUp(index))">
                 <div class="deviceContent">
                     <div class="deviceTitleBox">
-                        <p>@esp32.name</p>
+                        <p>naam: @esp32.name</p>
                     </div>
                     <div class="deviceSmallContentBox">
-                        <p>@esp32.location</p>
+                        <p>locatie: @esp32.location</p>
                     </div>
                 </div>
-                <div class="deviceStatus">
+                <div class="deviceStatus" style=@statusesp[esp32]>
 
                 </div>
             </div>
             <div class="devicePopUpContentBox" hidden=@(i != popupwindow)>
                     <div class="exitButton" @onclick="(() => changePopUp(0))">X</div>
                     <div class="devicePopUpTitleBox">
-                        <div class="devicePopUpStatus" />
+                        <div class="devicePopUpStatus" style=@statusesp[esp32]/>
                         <p>@esp32.name</p>
                     </div>
                     <div class="devicePopUpDescription">
-                        <p>@esp32.ip @esp32.port</p>
                         <p>@esp32.location</p>
                     </div>
                     <div class="devicePopUpButtons">
                         <div class="devicePopUpButtonBox">
-                            <div class="devicePopUpButtonStatus" />
-                            <button class="devicePopUpButton"> toggle button </button> 
+                            <div class="devicePopUpButtonStatus" style=@statusbutton[esp32][0]/>
+                            <button class="devicePopUpButton" @onclick=@(_ => setButton(esp32,1))> 
+                                toggle button 
+                            </button> 
                         </div>
                         <div class="devicePopUpButtonBox">
-                            <div class="devicePopUpButtonStatus" />
-                            <button class="devicePopUpButton"> toggle door</button>
+                            <div class="devicePopUpButtonStatus" style=@statusbutton[esp32][1]/>
+                            <button class="devicePopUpButton" @onclick=@(_ => setButton(esp32,2))> 
+                                toggle door
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -65,28 +68,47 @@
     
     
     private int popupwindow = 0;
+    private string[] colorDecode = {
+        "yellow", "red","#4CAF50"
+    };
+    private Dictionary<esp32, string>? statusesp;
+
+    private Dictionary<esp32, List<string>>? statusbutton;
     
     protected void changePopUp(int index){
         Console.WriteLine(index);
         popupwindow = index;
     }
+    protected async void setButton(esp32 v, int button){
+        int x = await v.toggleButton(button);
+        statusbutton[v][button-1] = toColor(x + 1);
+        StateHasChanged();
+    }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+
+        devices = tcp.getConnectionList().Values.ToList();
+        statusesp = new();
+        statusbutton = new();
+        //Task.WaitAll(devices.Select(v => v.updateData()).ToArray());
+        foreach(var dev in devices){
+            await dev.updateData();
+            statusesp.Add(dev, toColor(2));
+            if (dev.disconnected){
+                statusesp[dev] = toColor(1);
+            }
+            statusbutton.Add(dev, new(dev.buttons.Length));
+            for (int i = 0; i < dev.buttons.Length; i++){
+                statusbutton[dev].Add(toColor( (dev.disconnected) ? 0: dev.buttons[i] + 1));
+            }
+        }
         var user = await storage.GetAsync<Gebruiker>("user");
         if (user.Success){
             currentuser = user.Value;
         }
         if (firstRender) StateHasChanged();
     }
-    protected override async Task OnInitializedAsync()
-    {
-        devices = await deviceService.getDeviceList();
-        var connection = await tcp.AcceptTcpClientAsync();
-        Console.WriteLine("connected?");
-        var connStream = connection.GetStream();
-        String message = "get";
-        byte[] messageBytes = System.Text.Encoding.ASCII.GetBytes(message);
-        connStream.Write(messageBytes, 0, messageBytes.Length);
-        Console.WriteLine("send");
+    protected string toColor(int i){
+        return "background-color: "+colorDecode[i];
     }
 }

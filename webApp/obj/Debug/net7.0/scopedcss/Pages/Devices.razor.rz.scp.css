@@ -41,7 +41,7 @@
   .deviceStatus[b-rvs7wk2tvz] {
     width: 10%;
     float: right;
-    background-color: green;
+    background-color: yellow;
     height: 100%;
   }
   
@@ -83,7 +83,7 @@
     height: 20px;
     border-radius: 50%;
     margin-right: 10px;
-    background-color: #4CAF50;
+    background-color: yellow;
   }
 
   .devicePopUpTitleBox p[b-rvs7wk2tvz] {
@@ -132,13 +132,15 @@
     height: 10px;
     border-radius: 50%;
     margin-right: 10px;
-    background-color: #4CAF50;
+    background-color:yellow;
   }
   .exitButton[b-rvs7wk2tvz]{
     position: absolute;
     top: 0;
     right: 0;
     background-color: red;
+    transform: translate(-7px, +7px);
+    border-radius: 10px;
     color: black;
     width: 40px;
     text-align: center;
