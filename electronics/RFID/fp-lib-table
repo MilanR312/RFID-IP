@@ -2,4 +2,5 @@
   (version 7)
   (lib (name "Library")(type "KiCad")(uri "/home/milan/Desktop/RFID-IP/electronics/symlib/Library.pretty")(options "")(descr ""))
   (lib (name "UGent_standard_stock_Connector")(type "KiCad")(uri "/home/milan/Documents/custom_kiCad/ugent/UGent_standard_stock_Connector.pretty")(options "")(descr ""))
+  (lib (name "KiCad")(type "KiCad")(uri "C:/Users/joren/Downloads/SRR4828A-3R9Y/KiCad")(options "")(descr ""))
 )

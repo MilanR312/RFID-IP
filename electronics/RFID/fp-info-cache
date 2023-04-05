@@ -1,4 +1,4 @@
-21605071093312230
+21567713872899953
 Audio_Module
 Reverb_BTDR-1H
 Digital Reverberation Unit, http://www.belton.co.kr/inc/downfile.php?seq=17&file=pdf (footprint from http://www.uk-electronic.de/PDF/BTDR-1.pdf)
@@ -60717,13 +60717,6 @@ Yellow 5381 Series LED
 0
 2
 2
-Library
-espConn
-
-
-0
-38
-38
 Module
 A20_OLINUXINO_LIME2
 A20 Olinuxino LIME2, 1.2GHz, 512-1024MB RAM, Micro-SD, NAND or eMMC, 1000Mbit Ethernet
@@ -89298,27 +89291,6 @@ igbt diode module
 0
 25
 25
-UGent_standard_stock_Connector
-GCT_USB4125-GF-A_REVA2
-
-
-0
-10
-10
-UGent_standard_stock_Connector
-STX3000
-STX-3000-1
-Connector
-0
-3
-3
-UGent_standard_stock_Connector
-USB_C_Receptacle_GCT_USB4135-GF-A_6P_TopMnt_Horizontal
-USB Type C Receptacle, GCT, power-only, 6P, top mounted, horizontal, 3A: https://gct.co/files/drawings/usb4135.pdf
-USB C Type-C Receptacle SMD USB Power-only Charging-only 6P 6C USB4135-GF-A
-0
-10
-7
 Valve
 Valve_ECC-83-1
 Valve ECC-83-1 round pins

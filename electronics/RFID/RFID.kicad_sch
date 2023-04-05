@@ -3268,7 +3268,7 @@
     (property "Value" "3.9µH" (at 68.58 74.93 90)
       (effects (font (size 1.27 1.27)))
     )
-    (property "Footprint" "Inductor_SMD:L_Bourns-SRN6028" (at 68.58 78.74 0)
+    (property "Footprint" "KiCad:SRR4828A3R9Y" (at 68.58 78.74 0)
       (effects (font (size 1.27 1.27)) hide)
     )
     (property "Datasheet" "~" (at 68.58 78.74 0)
