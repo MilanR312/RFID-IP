@@ -83,7 +83,9 @@ public class esp32{
         return Encoding.ASCII.GetString(buffer);
     }
     private async Task send(string message){
-        byte[] data = Encoding.ASCII.GetBytes(message + '\n');
+        if (message.Length > 32) throw new Exception("too long of a message");
+        //send ths tring as a c style string
+        byte[] data = Encoding.ASCII.GetBytes(message.PadRight(33,'\0'));
         await tcpStream.WriteAsync(data,0,data.Length);
     }
 }
