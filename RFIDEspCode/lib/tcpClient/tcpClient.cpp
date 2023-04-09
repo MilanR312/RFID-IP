@@ -2,19 +2,26 @@
 
 
 
-void tcpClient::connect(const char * host, const uint16_t port) {
+tcpClient::tcpClient(const char * host, const uint16_t port)
+:connection(host, port)
+{
+}
+
+void tcpClient::connect()
+ {
     //wait for wifi if not already connected
     while(WiFi.status() != WL_CONNECTED){
         delay(500);
     }
     Serial.println("connecting to website");
     //wait for the client to connect to the server
-    while(!client.connect(host,port)){
+    while(!client.connect(connection.host,connection.port)){
         Serial.print(".");
         delay(500);
     }
     Serial.println("\nconnected");
 }
+
 tcpClient::~tcpClient(){
     Serial.println("disconnecting client");
     client.stop();
@@ -25,9 +32,11 @@ void tcpClient::send(const char * message){
     if(!isConnected) return;
     client.print(message);
 }
-
+void tcpClient::send(const std::string & message){
+    tcpClient::send(message.c_str());
+}
 const char * const tcpClient::receive(){
-    if(!isConnected) return;
+    if(!isConnected) return 0;
     //wait indefinitly for data to become available
     while(!client.available()){
         delay(10);
@@ -56,6 +65,5 @@ void tcpClient::mainLoop(){
 }
 
 void tcpClient::registerCallback(void (*callback)(const char *)){
-    if(!isConnected) return;
     this->callback = callback;
 }

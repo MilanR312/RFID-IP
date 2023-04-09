@@ -1,28 +1,50 @@
 #pragma once
 
 #include "WiFi.h"
+#include "assert.h"
+#include <string>
+#include "Array.hpp"
 //credit
 //https://gist.github.com/fazaio/50c7f62c10c21e3947c8319cc5142ed1
 
 
 
-class tcpClient{
-    WiFiClient client;
-    //max message length is 32
-    char message[33] = {0};
 
-    bool isConnected = false;
+struct connectionDetails{
+    const char * host;
+    const uint16_t port;
+    connectionDetails(const char * host, const uint16_t port)
+    : host(host), port(port)
+    {}
+};
+
+class tcpClient{
+    connectionDetails connection;
+
+    WiFiClient client;
+    //max receiving message length is 32
+    char message[33] = {0};
+    
     //allocate space for callback
-    bool isFinished = false;
+    bool isConnected = false;
     void (*callback)(const char *) = 0;
+    
     public:
 
-    void connect(const char * host, const uint16_t port);
+    //name of the device
+    std::string name;
+    //location of the device
+    std::string location;
+
+    tcpClient(const char * host, const uint16_t port);
+
+    void connect();
     ~tcpClient();
     /**
      * send the message to the server
     */
-    inline void send(const char message[]);
+    void send(const char * message);
+    void send(const std::string & message);
     /**
      * receive a message that is saved in the message variable
      * code blocks until read
@@ -34,7 +56,7 @@ class tcpClient{
      * receives a message and executes the callback when it is received
      * copy the string in the callback!!!
     */
-    inline void registerCallback(void (*callback)(const char *));
+    void registerCallback(void (*callback)(const char *));
 
     /**
      * use in mainloop to allow for callback running

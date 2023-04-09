@@ -4,14 +4,29 @@
 const char * ssid = "SSID";
 const char * password = "Pass";
 
-tcpClient website;
+Array<bool, 2> buttonLink;
+
+tcpClient website("ip address here", 8090);
+
 
 
 void handleMessage(const char * message){
   char buffer[33] = {0};
   strcpy(buffer, message);
-  if (strstr(buffer, "GETNAME") != NULL){
-    //enz
+  if (strstr(buffer, "GET") != NULL){
+    //request data
+    if (strstr(buffer, "NAME") != NULL)
+      return website.send(website.name);
+    if (strstr(buffer, "LOCATION") != NULL)
+      return website.send(website.location);
+    if (char * loc = strstr(buffer, "BUTTON")){
+      //goto number after
+      loc += 6;
+      int num = *loc - '0';
+      char * toSend = "0";
+      toSend[0] = buttonLink[num] + '0';
+      website.send(toSend);
+    }
   }
 }
 
@@ -25,7 +40,9 @@ void setup() {
   }
   Serial.println("\nconnected");
 
-  website.connect("ip addres here", 8090);
+  website.connect();
+  website.name = "ESP32Test";
+  website.location = "testingLocation";
   website.registerCallback(handleMessage);
 }
 
