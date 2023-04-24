@@ -15,10 +15,17 @@ void tcpClient::connect()
     }
     Serial.println("connecting to website");
     //wait for the client to connect to the server
-    while(!client.connect(connection.host,connection.port)){
-        Serial.print(".");
+    Serial.println(client.available());
+    Serial.println(client.connected());
+    int res = client.connect(connection.host, connection.port);
+    while(!res){
+        Serial.println(connection.host);
+        Serial.println(connection.port);
+        Serial.println(res);
+        res = client.connect(connection.host, connection.port);
         delay(500);
     }
+    isConnected = true;
     Serial.println("\nconnected");
 }
 
@@ -29,6 +36,8 @@ tcpClient::~tcpClient(){
 
 
 void tcpClient::send(const char * message){
+    Serial.print("sending ");
+    Serial.println(message);
     if(!isConnected) return;
     client.print(message);
 }
@@ -41,7 +50,7 @@ const char * const tcpClient::receive(){
     while(!client.available()){
         delay(10);
     }
-    int amountRead = client.readBytesUntil('\0',message,32);
+    int amountRead = client.readBytesUntil('\n',message,32);
     message[amountRead+1] = 0; //add null netminator
     return message;
 }
@@ -53,10 +62,16 @@ void tcpClient::mainLoop(){
     //if char is available read it
     while (client.available()){
         char r = client.read();
+        if (r == 0) continue;
         message[stringindex] = r;
+        /*Serial.print(r);
+        Serial.print(" ");
+        Serial.print((int) r);
+        Serial.print(" ");
+        Serial.println(stringindex);*/
         stringindex++;
         //if the char is \0 or the buffer is full, send it out and restart
-        if (r == '\0' || stringindex == 33){
+        if (r == '\n' || stringindex == 33){
             message[stringindex] = '\0';
             callback(message);
             stringindex = 0;
