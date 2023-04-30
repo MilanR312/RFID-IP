@@ -24,7 +24,6 @@ class tcpClient{
     WiFiClient client;
     //max receiving message length is 32
     char message[33] = {0};
-    
     //allocate space for callback
     bool isConnected = false;
     void (*callback)(const char *) = 0;
@@ -35,6 +34,8 @@ class tcpClient{
     std::string name;
     //location of the device
     std::string location;
+
+    char lastLoggedInUser[33] = "something long";
 
     tcpClient(const char * host, const uint16_t port);
 

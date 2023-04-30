@@ -24,4 +24,6 @@ class Array{
     }
 
     const size_t length() const {return N;}
+
+    T * pdata() { return data; }
 };

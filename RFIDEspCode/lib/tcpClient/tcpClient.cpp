@@ -1,6 +1,8 @@
 #include "tcpClient.hpp"
 
+#include "LiquidCrystal.h"
 
+extern LiquidCrystal lcd;
 
 tcpClient::tcpClient(const char * host, const uint16_t port)
 :connection(host, port)
@@ -14,14 +16,28 @@ void tcpClient::connect()
         delay(500);
     }
     Serial.println("connecting to website");
+    lcd.clear();
+    lcd.print("website connect");
+    lcd.setCursor(0,1);
     //wait for the client to connect to the server
-    Serial.println(client.available());
-    Serial.println(client.connected());
+    int pos = 0;
+
     int res = client.connect(connection.host, connection.port);
     while(!res){
-        Serial.println(connection.host);
-        Serial.println(connection.port);
         Serial.println(res);
+        pos++;
+        
+        lcd.print(".");
+        lcd.setCursor(pos, 1);
+    
+        if (pos > 16){
+            lcd.clear();
+            lcd.home();
+            lcd.print("website connect");
+            lcd.setCursor(0,1);
+            pos = 0;
+        }
+            
         res = client.connect(connection.host, connection.port);
         delay(500);
     }
@@ -38,7 +54,7 @@ tcpClient::~tcpClient(){
 void tcpClient::send(const char * message){
     Serial.print("sending ");
     Serial.println(message);
-    if(!isConnected) return;
+    if(!isConnected) return;    
     client.print(message);
 }
 void tcpClient::send(const std::string & message){
@@ -64,11 +80,6 @@ void tcpClient::mainLoop(){
         char r = client.read();
         if (r == 0) continue;
         message[stringindex] = r;
-        /*Serial.print(r);
-        Serial.print(" ");
-        Serial.print((int) r);
-        Serial.print(" ");
-        Serial.println(stringindex);*/
         stringindex++;
         //if the char is \0 or the buffer is full, send it out and restart
         if (r == '\n' || stringindex == 33){

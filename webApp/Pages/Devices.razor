@@ -24,28 +24,30 @@
                         <p>locatie: @esp32.location</p>
                     </div>
                 </div>
-                <div class="deviceStatus" style=@statusesp[esp32]>
+                <div class="deviceStatus" style=@esp32.status>
 
                 </div>
             </div>
             <div class="devicePopUpContentBox" hidden=@(i != popupwindow)>
                     <div class="exitButton" @onclick="(() => changePopUp(0))">X</div>
                     <div class="devicePopUpTitleBox">
-                        <div class="devicePopUpStatus" style=@statusesp[esp32]/>
+                        <div class="devicePopUpStatus" style=@esp32.status/>
                         <p>@esp32.name</p>
                     </div>
                     <div class="devicePopUpDescription">
                         <p>@esp32.location</p>
+                        <p>@esp32.latestLogin</p>
                     </div>
                     <div class="devicePopUpButtons">
+
                         <div class="devicePopUpButtonBox">
-                            <div class="devicePopUpButtonStatus" style=@statusbutton[esp32][0]/>
+                            <div class="devicePopUpButtonStatus" style=@esp32.statusbutton[0]/>
                             <button class="devicePopUpButton" @onclick=@(_ => setButton(esp32,1))> 
                                 toggle button 
                             </button> 
                         </div>
                         <div class="devicePopUpButtonBox">
-                            <div class="devicePopUpButtonStatus" style=@statusbutton[esp32][1]/>
+                            <div class="devicePopUpButtonStatus" style=@esp32.statusbutton[1]/>
                             <button class="devicePopUpButton" @onclick=@(_ => setButton(esp32,2))> 
                                 toggle door
                             </button>
@@ -64,35 +66,54 @@
 
     private Gebruiker? currentuser;
 
-    private List<esp32>? devices;
+    private List<esp32V2>? devices;
     
     
     private int popupwindow = 0;
     private string[] colorDecode = {
         "yellow", "red","#4CAF50"
     };
-    private Dictionary<esp32, string>? statusesp;
-
-    private Dictionary<esp32, List<string>>? statusbutton;
-    
+   
     protected void changePopUp(int index){
         Console.WriteLine(index);
         popupwindow = index;
-    }
-    protected async void setButton(esp32 v, int button){
-        int x = await v.toggleButton(button);
-        statusbutton[v][button-1] = toColor(x + 1);
         StateHasChanged();
+    }
+    protected async void setButton(esp32V2 v, int button){
+        
+        int x = await v.toggleButton(button);
+        v.statusbutton[button-1] = toColor(x + 1);
+        StateHasChanged();
+    }
+    protected override async Task OnInitializedAsync()
+    {
+        devices = tcp.getConnectionList().Values.ToList();
+
+        foreach(var dev in devices){
+            await dev.updateData();
+            //dev.stateHasChanged = StateHasChanged;
+            dev.status = toColor(2);
+            for (int i = 0; i < dev.buttons.Length; i++){
+                dev.statusbutton.Add(toColor(1));
+            }
+            
+        }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
 
         devices = tcp.getConnectionList().Values.ToList();
-        statusesp = new();
+        /*statusesp = new();
         statusbutton = new();
+
+        Console.WriteLine("cap = " + devices.Count);
+
         //Task.WaitAll(devices.Select(v => v.updateData()).ToArray());
         foreach(var dev in devices){
+            if (dev.stateHasChanged == null) dev.stateHasChanged = StateHasChanged;
+             
             await dev.updateData();
+            Console.WriteLine("updated data");
             statusesp.Add(dev, toColor(2));
             if (dev.disconnected){
                 statusesp[dev] = toColor(1);
@@ -101,7 +122,7 @@
             for (int i = 0; i < dev.buttons.Length; i++){
                 statusbutton[dev].Add(toColor( (dev.disconnected) ? 0: dev.buttons[i] + 1));
             }
-        }
+        }*/
         var user = await storage.GetAsync<Gebruiker>("user");
         if (user.Success){
             currentuser = user.Value;

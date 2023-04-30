@@ -15,6 +15,7 @@ public class esp32{
     public string name{get;set;} = "";
 
     public string location{get;set;} = "";
+    public string latestLoging{get;set;} = "";
     public int[] buttons = new int[2]; //-1 invalid, 0: off, 1: on
 
     public bool disconnected = false;
@@ -46,21 +47,26 @@ public class esp32{
     public async Task updateData(){
         if (disconnected) return;
         if (this.name == ""){
-            await dataToSend.add(new(true, "GETNAME"), v => {
+            await dataToSend.add(new(true, "GETNAME\n"), v => {
                 this.name = v;
             });
         }
         if (this.location == ""){
-            await dataToSend.add(new(true, "GETLOCATION"), v => {
+            await dataToSend.add(new(true, "GETLOCATION\n"), v => {
                 this.location = v;
             });
         }
         for (int i = 0; i < this.buttons.Length ; i++){
             if (buttons[i] == -1){
-                await dataToSend.add(new(true, $"GETBUTTON{i+1}"), v => {
+                await dataToSend.add(new(true, $"GETBUTTON{i+1}\n"), v => {
                     buttons[i] = int.Parse(v);
                 });
             }
+        }
+        if (this.latestLoging == ""){
+            await dataToSend.add(new(true, "GETLLOGIN\n"), v => {
+                this.latestLoging = v;
+            });
         }
         
     }
@@ -69,8 +75,8 @@ public class esp32{
         if (disconnected) return -1;
         int oldval = this.buttons[button-1];
         int newVal = (oldval == 0) ? 1 : 0;
-        disconnected = await dataToSend.add(new(false, $"SETBUTTON{button}{newVal}"), v => {});
-        disconnected = await dataToSend.add(new(true, $"GETBUTTON{button}"), v =>{
+        disconnected = await dataToSend.add(new(false, $"SETBUTTON{button}{newVal}\n"), v => {});
+        disconnected = await dataToSend.add(new(true, $"GETBUTTON{button}\n"), v =>{
             this.buttons[button-1] = int.Parse(v);
             Console.WriteLine($"got value {int.Parse(v)}");
         });
