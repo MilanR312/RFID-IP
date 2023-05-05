@@ -6,25 +6,31 @@
 #include "sql.h"
 #include "Door.h"
 #include <cstdio>
-//const char * ssid = "IoTdevices";
-//const char * password = "FGwrdsa=ghaR";
+const char * ssid = "IoTdevices";
+const char * password = "FGwrdsa=ghaR";
 
 
 
-//#define RFID
+#define RFID
 #define WEBSITE
 #define SQL
 
 //buttonLink[0] -> doorOverride
 Array<bool, 2> buttonLink;
-tcpClient website("192.168.1.59", 8090);
 
+#ifdef WEBSITE
+tcpClient website("192.168.1.59", 8090);
+#endif
+
+#ifdef SQL
 postgresESP sql(192,168,1,59,  5432);
+Array<uint8_t, 4> read_buffer;
+#endif
+
 
 Unit_UHF_RFID rfid;
-Array<uint8_t, 4> read_buffer;
 
-//Door dr(2,0,16,4);
+Door dr(2,0,16,4);
 
 LiquidCrystal lcd(23,22,21,19,18,5);
 
@@ -84,11 +90,44 @@ void handleMessageV2(const char * message){
     }
   }
 }
-void doorMotion(){
-  Serial.println("someone went trough the door");
-}
+
 //tx = 14 , rx = 12
 
+void checkUser(char * buff){
+  #ifdef SQL
+
+
+  if(char * user = sql.checkUser(buff)){
+    //user is allowed entry
+    Serial.print(user);
+    Serial.println(" is allowed entry");
+    strncpy(website.lastLoggedInUser, user, 32);
+    if(!dr.forcedOpen)
+      dr.isAllowedEntry = true;
+    // fix this
+    //website.send(website.lastLoggedInUser);
+  } else {
+    Serial.println("no entry");
+  }
+
+  #else //als SQL server niet verbonden is laat iedereen toe
+  if (!dr.forcedOpen)
+    dr.isAllowedEntry = true;
+    
+  #endif
+}
+void scanArtikel(char * buff){
+  #ifdef SQL
+  int direction = dr.getDirection();
+  if (direction != 0){
+    Serial.println("writing to dbs");
+    sql.setArtikel(buff, direction > 0);
+
+    delay(5000); //wait 5 seconds to let product get out of radius
+    //fix this !! bad solution
+  }
+  #endif
+}
 
 void setup() {
   delay(5000);
@@ -143,11 +182,11 @@ void setup() {
   website.location = "testingLocation";
   website.registerCallback(handleMessageV2);
   #endif
+
   #ifdef SQL
   sql.connect("ESP32", "ESP32", "RFID");
   #endif
 
-  //dr.registerCallback(doorMotion);
 
 
 /*
@@ -164,8 +203,22 @@ void setup() {
   delay(10000);*/
 }
 void loop() {
-  lcd.clear();
-  lcd.print("testing");
+  #ifdef WEBSITE
+  if (buttonLink[0] == 1){ //allows the website to force open door
+    dr.forcedOpen = true;
+    strncpy(website.lastLoggedInUser, "OVERRIDE", 32);
+  } else
+    dr.forcedOpen = false;
+  
+  
+  
+  do {
+    website.mainLoop();
+  } while (buttonLink[1]); // turns off the esp32 (kinda)
+  
+  #endif
+
+
 
   #ifdef RFID
   //read a tag
@@ -175,31 +228,27 @@ void loop() {
       Serial.print(read_buffer[i]);
       Serial.print(" ");
     }
-    if (read_buffer[0] == 0b10000000){
+    //card scanned is an user
+    char buff[4];
+    snprintf(buff, 4, "%d%d%d", read_buffer[1], read_buffer[2], read_buffer[3]);
+    
+    if (read_buffer[0] >> 7 == 1){
       Serial.println("user scanned checking dbs");
-      char buff[4];
-      snprintf(buff, 4, "%d%d%d", read_buffer[1], read_buffer[2], read_buffer[3]);
-      #ifdef SQL
-      if(char * user = sql.checkUser(buff)){
-        //user is allowed entry
-        Serial.print(user);
-        Serial.println(" is allowed entry");
-        strncpy(website.lastLoggedInUser, user, 32);
-        
-        // fix this
-        //website.send(website.lastLoggedInUser);
-      } else {
-        Serial.println("no entry");
-      }
-      #endif
+      checkUser(buff);
+    }
+    //card scanned is a product
+    if (read_buffer[0] >> 7 == 0){
+      Serial.println("product scanned getting direction");
+      scanArtikel(buff);
     }
   }
   #endif
-  #ifdef WEBSITE
-  website.mainLoop();
-  #endif
-  //dr.loop();
-  //Serial.print("direction = ");
-  //Serial.println(dr.getDirection());
+
+
+
+  
+  dr.loop();
+
+
   delay(1000);
 }

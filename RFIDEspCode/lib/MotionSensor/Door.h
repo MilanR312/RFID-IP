@@ -12,6 +12,10 @@ class Door{
 
     int prev;
     public:
+
+    bool forcedOpen = false;
+    bool isAllowedEntry = false;
+
     Door(int pin1, int pin2, int deurSens, int deur)
     : m1(pin1), m2(pin2), deurPin(deur), deurSensPin(deurSens)
     {
@@ -19,6 +23,14 @@ class Door{
         pinMode(deur, OUTPUT);
     }
     void loop(){
+        if (forcedOpen){
+            digitalWrite(deurPin, HIGH);
+            return;
+        }
+        if (!isAllowedEntry){
+            digitalWrite(deurPin, LOW);
+            return;
+        }
         m1.sense();
         m2.sense();
         getDirection();
@@ -39,26 +51,16 @@ class Door{
                 Serial.println("closing door");
                 digitalWrite(deurPin, LOW);
                 open = false;
+                isAllowedEntry = false;
             }
         }
         
     }
-    /**
-     * @brief function that gets triggered when something goes trough the door
-    */
-    void registerCallback(void (*callback)(void)){
-        this->callback = callback;
-    }
+
     int getDirection(){
         int out = 0;
         if (m1.getTime() > m2.getTime()) out = 1;
         if (m2.getTime() > m1.getTime()) out =  -1;
-        
-        //max 1 second to get trough door
-        if (prev != out && open){
-            callback();
-        }
-        prev = out;
         return out;
     }
 };
