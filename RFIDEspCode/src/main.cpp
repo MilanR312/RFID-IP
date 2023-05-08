@@ -11,7 +11,7 @@ const char * password = "FGwrdsa=ghaR";
 
 
 
-#define RFID
+//#define RFID
 #define WEBSITE
 #define SQL
 
@@ -19,11 +19,11 @@ const char * password = "FGwrdsa=ghaR";
 Array<bool, 2> buttonLink;
 
 #ifdef WEBSITE
-tcpClient website("192.168.1.59", 8090);
+tcpClient website("172.22.31.194", 8090);
 #endif
 
 #ifdef SQL
-postgresESP sql(192,168,1,59,  5432);
+postgresESP sql(172,22,31,194,  5432);
 Array<uint8_t, 4> read_buffer;
 #endif
 
@@ -31,8 +31,8 @@ Array<uint8_t, 4> read_buffer;
 Unit_UHF_RFID rfid;
 
 Door dr(2,0,16,4);
-
-LiquidCrystal lcd(23,22,21,19,18,5);
+//rs en D4-D7
+LiquidCrystal lcd(5,18,19,21,22,23);
 
 enum state: byte{
     LOCATION,
@@ -134,8 +134,6 @@ void setup() {
   Serial.begin(115200);
   lcd.begin(16,2);
 
-  buttonLink[0] = 1;
-
   WiFi.mode(WIFI_STA);
   WiFi.setMinSecurity(WIFI_AUTH_WPA_PSK);
   WiFi.begin(ssid, password);
@@ -162,13 +160,25 @@ void setup() {
 
   #ifdef RFID
   rfid.begin(&Serial2, 115200, 14, 12, false);
-
+  lcd.clear();
+  lcd.print("RFID connect");
+  lcd.setCursor(0,1);
   String info;
+  tryAmount = 0;
   while (1){
     info = rfid.getVersion();
     Serial.println(info);
+    tryAmount++;
+    lcd.print(".");
+    if (tryAmount > 16){
+      tryAmount = 0;
+      lcd.clear();
+      lcd.print("RFID connect");
+      lcd.setCursor(0,1);
+    }
     if (info != "ERROR")
       break;  
+    delay(100);
   }
   Serial.println("connected RFID");
   rfid.setTxPower(100);
@@ -187,7 +197,7 @@ void setup() {
   sql.connect("ESP32", "ESP32", "RFID");
   #endif
 
-
+  lcd.clear();
 
 /*
   uint8_t write_buffer[4] = {0};
@@ -202,26 +212,38 @@ void setup() {
   }
   delay(10000);*/
 }
+char websiteBuffer[32];
 void loop() {
   #ifdef WEBSITE
-  if (buttonLink[0] == 1){ //allows the website to force open door
-    dr.forcedOpen = true;
-    strncpy(website.lastLoggedInUser, "OVERRIDE", 32);
-  } else
-    dr.forcedOpen = false;
-  
-  
-  
+
   do {
     website.mainLoop();
-  } while (buttonLink[1]); // turns off the esp32 (kinda)
+    if (buttonLink[1]){ //if esp is turned off
+      lcd.clear();
+      lcd.print("Door disabled");
+      delay(500);
+    }
+    else if (buttonLink[0]){ //if door forced open
+      dr.forcedOpen = true;
+      strncpy(website.lastLoggedInUser, "OVERRIDE", 32);
+
+      lcd.clear();
+      lcd.print("forced open");
+      snprintf(websiteBuffer, 32, "%c%-32s", LOGIN + '0', website.lastLoggedInUser);
+      website.send(websiteBuffer);
+      delay(1000);
+    }
+  } while (buttonLink[1] || buttonLink[0]); // turns off the esp32 (kinda)
   
+  dr.forcedOpen = false;
+  lcd.clear();
+
   #endif
 
 
 
   #ifdef RFID
-  //read a tag
+  //read a tag if not forced open
   if (rfid.readCard(read_buffer.pdata(), read_buffer.length(), 0x04, 0, 0)){
     Serial.println("read succesfull");
     for (int i = 0; i < 4; i++){
@@ -248,6 +270,9 @@ void loop() {
 
   
   dr.loop();
+
+
+  
 
 
   delay(1000);
