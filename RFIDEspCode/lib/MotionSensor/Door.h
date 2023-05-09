@@ -35,6 +35,11 @@ class Door{
         m2.sense();
         getDirection();
         if (digitalRead(m1.pin) || digitalRead(m2.pin)){
+            Serial.print(m1.pin);
+            Serial.println(digitalRead(m1.pin));
+            Serial.print(m2.pin);
+            Serial.println(digitalRead(m2.pin));
+            
             Serial.println("opening door");
             open = true;
             digitalWrite(deurPin, HIGH);

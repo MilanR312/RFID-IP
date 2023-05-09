@@ -11,10 +11,10 @@ const char * password = "FGwrdsa=ghaR";
 
 
 
-//#define RFID
+#define RFID
 #define WEBSITE
 #define SQL
-
+#define WRITE
 //buttonLink[0] -> doorOverride
 Array<bool, 2> buttonLink;
 
@@ -30,16 +30,21 @@ Array<uint8_t, 4> read_buffer;
 
 Unit_UHF_RFID rfid;
 
-Door dr(2,0,16,4);
+Door dr(32,33,26,25);
 //rs en D4-D7
-LiquidCrystal lcd(5,18,19,21,22,23);
+LiquidCrystal lcd(2,4,19,21,22,23);
 
-enum state: byte{
-    LOCATION,
-    NAME,
-    BUTTON,
-    LOGIN
-};
+void printBar(const char * message1, int & num){
+  if (num == 0 || num > 16){
+    lcd.clear();
+    lcd.print(message1);
+    lcd.setCursor(0,1);
+    num = 1;
+  } else {
+    lcd.setCursor(0,num);
+  }
+  lcd.print(".");
+}
 
 void handleMessageV2(const char * message){
   char buffer[33] = {0};
@@ -98,16 +103,21 @@ void checkUser(char * buff){
 
 
   if(char * user = sql.checkUser(buff)){
-    //user is allowed entry
-    Serial.print(user);
-    Serial.println(" is allowed entry");
+    //copy name into lastloggedin    
     strncpy(website.lastLoggedInUser, user, 32);
+
+    website.send(LOGIN, website.lastLoggedInUser);
+
+    lcd.clear();
+    lcd.print(user);
+    lcd.setCursor(0,1);
+    lcd.print("opened the door");
     if(!dr.forcedOpen)
       dr.isAllowedEntry = true;
-    // fix this
-    //website.send(website.lastLoggedInUser);
   } else {
     Serial.println("no entry");
+    lcd.clear();
+    lcd.print("no entry");
   }
 
   #else //als SQL server niet verbonden is laat iedereen toe
@@ -115,6 +125,7 @@ void checkUser(char * buff){
     dr.isAllowedEntry = true;
     
   #endif
+  delay(2000);
 }
 void scanArtikel(char * buff){
   #ifdef SQL
@@ -139,48 +150,37 @@ void setup() {
   WiFi.begin(ssid, password);
   uint8_t tryAmount = 0;
 
-  lcd.clear();
-  lcd.print("wifi connect");
-  lcd.setCursor(0,1); //goto second line
+  printBar("wifi connect", tryAmount);
   while(WiFi.status() != WL_CONNECTED){
     Serial.println(WiFi.status());
-
-    if (tryAmount%5 == 0){
-      lcd.print(".");
-      lcd.setCursor(tryAmount/5,1);
-    }
-    delay(500);
     tryAmount++;
-    if (tryAmount > 50){
-      Serial.println("reset due to infinite connection");
-      ESP.restart();
-    }
+    printBar("wifi connect", tryAmount);    
+    delay(500);
+    
   }
-  Serial.println("\nconnected");
+  lcd.clear();
+  lcd.print("Wifi connected");
+  delay(2000);
 
   #ifdef RFID
+  //rx tx
   rfid.begin(&Serial2, 115200, 14, 12, false);
-  lcd.clear();
-  lcd.print("RFID connect");
-  lcd.setCursor(0,1);
+  
   String info;
   tryAmount = 0;
+  printBar("RFID connect", tryAmount);
   while (1){
     info = rfid.getVersion();
     Serial.println(info);
     tryAmount++;
-    lcd.print(".");
-    if (tryAmount > 16){
-      tryAmount = 0;
-      lcd.clear();
-      lcd.print("RFID connect");
-      lcd.setCursor(0,1);
-    }
+    printBar("RFID connect", tryAmount);
     if (info != "ERROR")
       break;  
-    delay(100);
+    delay(500);
   }
-  Serial.println("connected RFID");
+  lcd.clear();
+  lcd.print("RFID connected");
+  delay(2000);
   rfid.setTxPower(100);
   #endif
 
@@ -199,20 +199,32 @@ void setup() {
 
   lcd.clear();
 
-/*
+  #ifdef WRITE
+
+
+  lcd.clear();
+  lcd.print("writing in");
+  lcd.setCursor(0,1);
+  for (int i = 5; i > 0; i--){
+    lcd.print(i);
+  }
   uint8_t write_buffer[4] = {0};
-  write_buffer[3] = 0b00000001;
-  write_buffer[0]  = 0b10000000;
+  write_buffer[3] = 0b00000000;
+  write_buffer[0]  = 0b10000000; //user starts with 1
   //hardcode for program to chip
+  lcd.clear();
   if (rfid.writeCard(write_buffer, sizeof(write_buffer), 0x04, 0,
                           0x00000000)) {
-      Serial.println("write Succesfull");
+      lcd.print("write Succesfull");
   } else {
-      Serial.println("Write ERROR");
+      lcd.print("Write ERROR");
   }
-  delay(10000);*/
+  delay(1000);
+  #endif
+  lcd.clear();
+  lcd.print("starting main loop");
+  delay(1000);
 }
-char websiteBuffer[32];
 void loop() {
   #ifdef WEBSITE
 

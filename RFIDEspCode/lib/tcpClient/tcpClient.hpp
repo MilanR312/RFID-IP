@@ -18,6 +18,14 @@ struct connectionDetails{
     {}
 };
 
+enum state: byte{
+    LOCATION,
+    NAME,
+    BUTTON,
+    LOGIN
+};
+
+
 class tcpClient{
     connectionDetails connection;
 
@@ -46,6 +54,7 @@ class tcpClient{
     */
     void send(const char * message);
     void send(const std::string & message);
+    void send(const state st, const char * message);
     /**
      * receive a message that is saved in the message variable
      * code blocks until read

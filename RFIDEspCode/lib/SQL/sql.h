@@ -74,22 +74,25 @@ class postgresESP{
 
         return handleReturn();
     }
+    char outBuffer[20] = {0};
 
     char * handleReturn(){
-        char * out = 0;
+        char * out;
         while (1){
             int rc = connection.getData();
             if (rc & PG_RSTAT_HAVE_COLUMNS){
-                //Serial.println("col");
-                //Serial.println(connection.nfields());
-                //Serial.println(connection.getColumn(0));
+                Serial.println("col");
+                Serial.println(connection.nfields());
+                Serial.println(connection.getColumn(0));
             } else if (rc & PG_RSTAT_HAVE_SUMMARY){
-                //Serial.println("message");
-                //Serial.println(connection.ntuples());
+                Serial.println("message");
+                Serial.println(connection.ntuples());
             } else if (rc & PG_RSTAT_HAVE_ROW){
-                //Serial.println("row");
-                //Serial.println(connection.getValue(0));
-                out = connection.getValue(0);
+                Serial.println("row");
+                Serial.println(connection.getValue(0));
+                //out = connection.getValue(1);
+                strcpy(outBuffer, connection.getValue(0));
+                out = outBuffer;
             }
             if (rc & PG_RSTAT_READY)
                 return out;

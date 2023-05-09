@@ -6,7 +6,7 @@
     <div class="loginform">
         <label>
         Naam:
-        <InputText id="naam" @bind-Value="loginForm.naam" class="loginInput"/>
+        <InputText id="naam" @bind-Value="loginForm.naam" class="loginInput" style=@style/>
     </label>
     <input id="submit" type="submit" class="btn" value="Verzenden">
 
@@ -22,9 +22,17 @@
     public EventCallback<Models.Gebruiker> onLoggedIn{ get; set; }
     private Models.Gebruiker loginForm = new();
 
+    private string style = "outline: none";
+
     private async void handleSubmit(){
         Console.WriteLine(loginForm.naam);
         var user = await GebruikerService.getGebruiker(loginForm.naam);
+        if (user == null){
+            style = "outline: none; border-color: red;";
+            StateHasChanged();
+            return;
+        }
+        style = "outline: none;";
         await storage.SetAsync("user", user);
         await onLoggedIn.InvokeAsync(user);
     }

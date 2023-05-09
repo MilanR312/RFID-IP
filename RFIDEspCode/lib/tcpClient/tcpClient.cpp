@@ -4,6 +4,7 @@
 
 extern LiquidCrystal lcd;
 
+
 tcpClient::tcpClient(const char * host, const uint16_t port)
 :connection(host, port)
 {
@@ -15,6 +16,7 @@ void tcpClient::connect()
     while(WiFi.status() != WL_CONNECTED){
         delay(500);
     }
+    
     Serial.println("connecting to website");
     lcd.clear();
     lcd.print("website connect");
@@ -60,6 +62,13 @@ void tcpClient::send(const char * message){
 void tcpClient::send(const std::string & message){
     tcpClient::send(message.c_str());
 }
+
+void tcpClient::send(const state st, const char * message){
+    char buff[32] = "";
+    snprintf(buff, 32,  "%c%-32s", st + '0', message);
+    tcpClient::send(buff);
+}
+
 const char * const tcpClient::receive(){
     if(!isConnected) return 0;
     //wait indefinitly for data to become available

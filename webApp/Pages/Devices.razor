@@ -88,6 +88,8 @@
     protected override async Task OnInitializedAsync()
     {
         devices = tcp.getConnectionList().Values.ToList();
+        
+        Console.WriteLine(devices.Count);
 
         foreach(var dev in devices){
             await dev.updateData();
