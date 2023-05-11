@@ -19,6 +19,7 @@
                 <div class="deviceContent">
                     <div class="deviceTitleBox">
                         <p>naam: @esp32.name</p>
+                        <p>@index</p>
                     </div>
                     <div class="deviceSmallContentBox">
                         <p>locatie: @esp32.location</p>
@@ -53,6 +54,10 @@
                             </button>
                         </div>
                     </div>
+                    <div>
+                        <p>log:</p>
+                        @((MarkupString) esp32.log())
+                    </div>
                 </div>
         }
     }
@@ -70,9 +75,7 @@
     
     
     private int popupwindow = 0;
-    private string[] colorDecode = {
-        "yellow", "red","#4CAF50"
-    };
+    
    
     protected void changePopUp(int index){
         Console.WriteLine(index);
@@ -82,56 +85,52 @@
     protected async void setButton(esp32V2 v, int button){
         
         int x = await v.toggleButton(button);
-        v.statusbutton[button-1] = toColor(x + 1);
-        StateHasChanged();
+        //v.statusbutton[button-1] = esp32V2.toColor(x + 1);
+        //StateHasChanged();
     }
     protected override async Task OnInitializedAsync()
     {
+
+        Console.WriteLine("init");
         devices = tcp.getConnectionList().Values.ToList();
         
         Console.WriteLine(devices.Count);
-
+    
         foreach(var dev in devices){
-            await dev.updateData();
             //dev.stateHasChanged = StateHasChanged;
-            dev.status = toColor(2);
+            dev.status = esp32V2.toColor(2);
             for (int i = 0; i < dev.buttons.Length; i++){
-                dev.statusbutton.Add(toColor(1));
+                dev.statusbutton.Add(esp32V2.toColor(1));
             }
             
         }
     }
     protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
+    {   
+        if (firstRender)
+            Console.WriteLine("firstrender");
 
         devices = tcp.getConnectionList().Values.ToList();
-        /*statusesp = new();
-        statusbutton = new();
 
-        Console.WriteLine("cap = " + devices.Count);
+        if (firstRender){
+            devices.ForEach(d => d.stateHasChanged=notifyChange);
+            foreach(var dev in devices){
+                await dev.updateData();
+            }
+        }
 
-        //Task.WaitAll(devices.Select(v => v.updateData()).ToArray());
-        foreach(var dev in devices){
-            if (dev.stateHasChanged == null) dev.stateHasChanged = StateHasChanged;
-             
-            await dev.updateData();
-            Console.WriteLine("updated data");
-            statusesp.Add(dev, toColor(2));
-            if (dev.disconnected){
-                statusesp[dev] = toColor(1);
-            }
-            statusbutton.Add(dev, new(dev.buttons.Length));
-            for (int i = 0; i < dev.buttons.Length; i++){
-                statusbutton[dev].Add(toColor( (dev.disconnected) ? 0: dev.buttons[i] + 1));
-            }
-        }*/
         var user = await storage.GetAsync<Gebruiker>("user");
         if (user.Success){
             currentuser = user.Value;
         }
         if (firstRender) StateHasChanged();
     }
-    protected string toColor(int i){
-        return "background-color: "+colorDecode[i];
+
+    public async void notifyChange(){
+        await InvokeAsync(() => {
+            Console.WriteLine("updating data");
+            StateHasChanged();
+        });
     }
+    
 }
