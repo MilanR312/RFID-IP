@@ -69,6 +69,9 @@ void tcpClient::send(const state st, const char * message){
     snprintf(buff, 32,  "%c%-32s", st + '0', message);
     tcpClient::send(buff);
 }
+void tcpClient::log(const char * message){
+    send(LOG, message);
+}
 
 const char * const tcpClient::receive(){
     if(!isConnected) return 0;

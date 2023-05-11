@@ -37,9 +37,9 @@ class Door{
         m1.sense();
         m2.sense();
         getDirection();
-        if (digitalRead(m1.pin) || digitalRead(m2.pin)){
-            website.send(LOG, "person detected at door");
-            website.send(LOG, "opening door");
+        if (!digitalRead(m1.pin) || !digitalRead(m2.pin)){
+            website.log("person detected at door");
+            website.log("opening door");
             open = true;
             digitalWrite(deurPin, HIGH);
             gettimeofday(&door_last_opened, NULL);

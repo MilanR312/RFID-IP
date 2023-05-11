@@ -22,7 +22,7 @@ public class esp32V2{
     public int[] buttons = new int[2];
     public bool disconnected = false;
 
-    public FixedSizedQueue<string> logs = new(10);
+    public FixedSizedQueue<string> logs = new(50);
 
     public Action? stateHasChanged;
 

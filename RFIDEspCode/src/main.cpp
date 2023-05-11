@@ -305,7 +305,9 @@ void loop() {
     
     if (read_buffer[0] >> 7 == 1){
       Serial.println("user scanned checking dbs");
+      website.log("user has scanned card");      
       checkUser(buff);
+
     }
     //card scanned is a product
     if (read_buffer[0] >> 7 == 0){

@@ -1,0 +1,26 @@
+﻿@page "/log"
+@inject ITCPService tcp
+
+<PageTitle>log</PageTitle>
+<select class="form-control" @bind="@selected" style="width:150px">
+         @foreach (var esp in devices)
+         {
+                 <option value=@esp.Key>@esp.Key</option>
+         }
+</select>
+<p>@selected</p>
+@if(devices != null && devices.ContainsKey(selected)){
+<div>
+    @((MarkupString) devices[selected].log())
+</div>
+}
+
+@code {
+    private Dictionary<string, esp32V2>? devices;
+    private string selected = string.Empty;
+    protected override async Task OnInitializedAsync()
+    {
+        devices = tcp.getConnectionList();
+    }
+
+}
