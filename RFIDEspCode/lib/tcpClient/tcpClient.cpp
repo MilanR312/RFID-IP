@@ -58,6 +58,7 @@ void tcpClient::send(const char * message){
     Serial.println(message);
     if(!isConnected) return;    
     client.print(message);
+    delay(100);
 }
 void tcpClient::send(const std::string & message){
     tcpClient::send(message.c_str());

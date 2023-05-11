@@ -1,4 +1,7 @@
 #include "MotionSensor.h"
+#include "tcpClient.hpp"
+
+extern tcpClient website;
 
 class Door{
     bool open = false;
@@ -35,12 +38,8 @@ class Door{
         m2.sense();
         getDirection();
         if (digitalRead(m1.pin) || digitalRead(m2.pin)){
-            Serial.print(m1.pin);
-            Serial.println(digitalRead(m1.pin));
-            Serial.print(m2.pin);
-            Serial.println(digitalRead(m2.pin));
-            
-            Serial.println("opening door");
+            website.send(LOG, "person detected at door");
+            website.send(LOG, "opening door");
             open = true;
             digitalWrite(deurPin, HIGH);
             gettimeofday(&door_last_opened, NULL);
@@ -53,7 +52,7 @@ class Door{
             int64_t time_curr = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
             int64_t time_old = (int64_t)door_last_opened.tv_sec * 1000000L + (int64_t)door_last_opened.tv_usec;
             if (time_curr - time_old > 10000000){ //10 seconds
-                Serial.println("closing door");
+                website.send(LOG, "closing door");
                 digitalWrite(deurPin, LOW);
                 open = false;
                 isAllowedEntry = false;

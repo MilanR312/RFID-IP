@@ -1,0 +1,2 @@
+platformio device monitor -b 115200
+sudo platformio run -t upload

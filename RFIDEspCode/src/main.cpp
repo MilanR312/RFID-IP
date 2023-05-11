@@ -6,24 +6,23 @@
 #include "sql.h"
 #include "Door.h"
 #include <cstdio>
-const char * ssid = "IoTdevices";
-const char * password = "FGwrdsa=ghaR";
-
+//const char * ssid = "IoTdevices";
+//const char * password = "FGwrdsa=ghaR";
 
 
 #define RFID
 #define WEBSITE
 #define SQL
-#define WRITE
+//#define WRITE
 //buttonLink[0] -> doorOverride
 Array<bool, 2> buttonLink;
 
 #ifdef WEBSITE
-tcpClient website("172.22.31.194", 8090);
+tcpClient website("192.168.1.59", 8090);
 #endif
 
 #ifdef SQL
-postgresESP sql(172,22,31,194,  5432);
+postgresESP sql(192,168,1,59,  5432);
 Array<uint8_t, 4> read_buffer;
 #endif
 
@@ -32,20 +31,23 @@ Unit_UHF_RFID rfid;
 
 Door dr(32,33,26,25);
 //rs en D4-D7
-LiquidCrystal lcd(2,4,19,21,22,23);
+LiquidCrystal lcd(4,18,19,21,22,23);
 
-void printBar(const char * message1, int & num){
+//print text or new . and reset if > 16
+void printBar(const char * message1, uint8_t & num){
   if (num == 0 || num > 16){
     lcd.clear();
     lcd.print(message1);
     lcd.setCursor(0,1);
-    num = 1;
+    num = 0;
   } else {
-    lcd.setCursor(0,num);
+    lcd.setCursor(num,1);
   }
   lcd.print(".");
 }
 
+
+//receive incomming message and execute
 void handleMessageV2(const char * message){
   char buffer[33] = {0};
   char sendBuffer[32] = {};
@@ -70,7 +72,7 @@ void handleMessageV2(const char * message){
         snprintf(sendBuffer, 32, "%c%-32s", instr, website.lastLoggedInUser);
         website.send(sendBuffer);
         break;
-      case BUTTON:
+      case BUTTON:{
         //read data byte
         int dev = buffer[2];
         int buttonIndex = dev - '0';
@@ -82,6 +84,11 @@ void handleMessageV2(const char * message){
         snprintf(sendBuffer, 32, "%c%c%-31c", instr, (char)buttonIndex+'0', (char)buttonData+'0');
         Serial.println(sendBuffer);
         website.send(sendBuffer);
+        break;
+      }
+      case ENABLED:
+        website.send(ENABLED, "0");
+        break;
     }
   } else {
     switch(instr - '0'){
@@ -92,6 +99,18 @@ void handleMessageV2(const char * message){
         buttonLink[index - '0'] = newState - '0';
         snprintf(sendBuffer, 32, "%c%c%-31c", instr, (char)index, (char)newState);
         website.send(sendBuffer);
+        //index = 0 && newState == 1 => red (2)
+        //index = 1 && newState == 1 => yellow (1)
+        Serial.print("buttons:");
+        Serial.print(buttonLink[0]);
+        Serial.print(" ");
+        Serial.println(buttonLink[1]);
+        if (buttonLink[0])
+          website.send(ENABLED, "2");
+        else if (buttonLink[1])
+          website.send(ENABLED, "1");
+        else
+          website.send(ENABLED, "0");
     }
   }
 }
@@ -100,7 +119,6 @@ void handleMessageV2(const char * message){
 
 void checkUser(char * buff){
   #ifdef SQL
-
 
   if(char * user = sql.checkUser(buff)){
     //copy name into lastloggedin    
@@ -144,10 +162,20 @@ void setup() {
   delay(5000);
   Serial.begin(115200);
   lcd.begin(16,2);
+  lcd.clear();
+  lcd.home();
+
+
+  lcd.print("starting up");
+
+
+  delay(1000);
+  lcd.clear();
 
   WiFi.mode(WIFI_STA);
   WiFi.setMinSecurity(WIFI_AUTH_WPA_PSK);
   WiFi.begin(ssid, password);
+
   uint8_t tryAmount = 0;
 
   printBar("wifi connect", tryAmount);
@@ -160,9 +188,12 @@ void setup() {
   }
   lcd.clear();
   lcd.print("Wifi connected");
-  delay(2000);
-
+  delay(1000);
   #ifdef RFID
+  lcd.clear();
+  lcd.print("connect rfid now");
+  delay(5000);
+
   //rx tx
   rfid.begin(&Serial2, 115200, 14, 12, false);
   
@@ -207,6 +238,7 @@ void setup() {
   lcd.setCursor(0,1);
   for (int i = 5; i > 0; i--){
     lcd.print(i);
+    delay(100);
   }
   uint8_t write_buffer[4] = {0};
   write_buffer[3] = 0b00000000;
@@ -225,14 +257,17 @@ void setup() {
   lcd.print("starting main loop");
   delay(1000);
 }
+
 void loop() {
   #ifdef WEBSITE
 
   do {
     website.mainLoop();
+    dr.loop();
     if (buttonLink[1]){ //if esp is turned off
       lcd.clear();
       lcd.print("Door disabled");
+      
       delay(500);
     }
     else if (buttonLink[0]){ //if door forced open
@@ -241,8 +276,8 @@ void loop() {
 
       lcd.clear();
       lcd.print("forced open");
-      snprintf(websiteBuffer, 32, "%c%-32s", LOGIN + '0', website.lastLoggedInUser);
-      website.send(websiteBuffer);
+      //website.send(LOGIN, website.lastLoggedInUser);
+
       delay(1000);
     }
   } while (buttonLink[1] || buttonLink[0]); // turns off the esp32 (kinda)
@@ -277,15 +312,6 @@ void loop() {
     }
   }
   #endif
-
-
-
-  
-  dr.loop();
-
-
-  
-
 
   delay(1000);
 }
