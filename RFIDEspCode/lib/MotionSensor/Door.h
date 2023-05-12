@@ -17,7 +17,8 @@ class Door
 
 public:
     bool open = false;
-
+    bool isOpeningOrClosing = false;
+    int tries = 0;
     bool forcedOpen = false;
     bool isAllowedEntry = false;
 
@@ -41,27 +42,34 @@ public:
         }
         m1.sense();
         m2.sense();
-        getDirection();
-        int tries = 0;
-        if (!digitalRead(m1.pin) || !digitalRead(m2.pin))
+        if (!digitalRead(m1.pin) || !digitalRead(m2.pin)) // wanneer iemand aant wachten is op opening vd deur
         {
             website.log("person detected at door");
             lcd.print("De deur wordt geopend");
             website.log("opening door");
             digitalWrite(deurPin, HIGH);
-            open = true;
-            while (digitalRead(deurPin) == LOW) // zolang de deur toch dicht blijft
+            if (digitalRead(deurSensPin) == HIGH && !isOpeningOrClosing) // Blijkt dat de deur toch nog dicht is en ze is nog niet aant openen
             {
-                if (tries >= 250)
-                { // na zoveel tijd komt er een error
-                    lcd.print("ERROR: deur kan niet open");
-                    open = false;
-                    break;
-                }
-                delay(500);
+                open = false;                // zeggen dat de deur niet open is
+                isOpeningOrClosing = true;   // zeggen dat de deur aan het openen is
+                digitalWrite(deurPin, HIGH); // de deur weer open zetten
                 tries++;
-                digitalWrite(deurPin, HIGH);           // blijven proberen om de deur te openen
-                gettimeofday(&door_last_opened, NULL); // telkens opvragen wanneer de deur geopend zou worden
+                delay(1000); // seconde wachten
+            }
+            else if (digitalRead(deurSensPin) == LOW && isOpeningOrClosing)
+            {              // als de deur uiteindelijk geopend is
+                tries = 0; // aantal tries resetten
+                open = true;
+                isOpeningOrClosing = false;
+                gettimeofday(&door_last_opened, NULL); // tijd van opening onthouden
+            }
+            else
+            {
+                tries++;
+                if (tries >= 5)
+                { // meer dan 5 keer ni gelukt -> error printen
+                    lcd.print("deur wilt niet openen");
+                }
             }
         }
 
@@ -76,25 +84,35 @@ public:
             { // 10 seconds
                 website.send(LOG, "closing door");
                 digitalWrite(deurPin, LOW);
-                open = false;
-                while (digitalRead(deurPin) == HIGH) // zolang de deur toch open blijft
+
+                if (digitalRead(deurSensPin) == LOW && !isOpeningOrClosing) // Blijkt dat de deur toch nog open is en ze is nog aant dichtgaan is
                 {
-                    if (tries >= 250)
-                    { // na zoveel tijd komt er een error
-                        lcd.print("ERROR: deur kan niet dicht");
-                        open = true;
-                        break;
-                    }
-                    delay(500);
+                    open = true;                // zeggen dat de deur niet open is
+                    isOpeningOrClosing = true;  // zeggen dat de deur aan het sluiten
+                    digitalWrite(deurPin, LOW); // de deur weer dicht doen
                     tries++;
-                    digitalWrite(deurPin, LOW); // blijven proberen om de deur te sluiten
+                    delay(1000); // seconde wachten
+                }
+                else if (digitalRead(deurSensPin) == HIGH && isOpeningOrClosing)
+                {              // als de deur uiteindelijk dicht is
+                    tries = 0; // aantal tries resetten
+                    open = false;
+                }
+                else
+                {
+                    tries++;
+                    if (tries >= 5)
+                    { // meer dan 5 keer ni gelukt -> error printen
+                        lcd.print("deur wilt niet sluiten");
+                    }
                 }
                 isAllowedEntry = false;
             }
         }
     }
 
-    int getDirection()
+    int
+    getDirection()
     {
         int out = 0;
         if (m1.getTime() > m2.getTime())
