@@ -4,8 +4,9 @@
 #include "SimplePgSQL.h"
 #include "UART.h"
 #include "LiquidCrystal.h"
-
+#include "tcpClient.hpp"
 extern LiquidCrystal lcd;
+extern tcpClient website;
 
 class postgresESP{
     IPAddress ip;
@@ -63,15 +64,17 @@ class postgresESP{
             sprintf(queryBuffer, "UPDATE artikel SET beschikbaar = beschikbaar + 1 where code like '%s';", pkey);
         else 
             sprintf(queryBuffer, "UPDATE artikel SET beschikbaar = beschikbaar - 1 WHERE code like '%s';", pkey);
+        website.log(queryBuffer+60);
         connection.execute(queryBuffer);
     }
 
     char *  checkUser(char * userId){
+        website.log(userId);
         memset(queryBuffer,0,256);
-        sprintf(queryBuffer, "SELECT naam FROM gebruiker WHERE id=%s;", userId);
+        sprintf(queryBuffer, "SELECT naam FROM gebruiker WHERE id like '%s';", userId);
         int a = connection.execute(queryBuffer);
         Serial.println(queryBuffer);
-
+        website.log(queryBuffer + 20);
         return handleReturn();
     }
     char outBuffer[20] = {0};

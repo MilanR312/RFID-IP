@@ -132,6 +132,7 @@ void checkUser(char * buff){
     lcd.print(user);
     lcd.setCursor(0,1);
     lcd.print("opened the door");
+    website.log(user);
     if(!dr.forcedOpen)
       dr.isAllowedEntry = true;
   } else {
@@ -150,6 +151,9 @@ void checkUser(char * buff){
 void scanArtikel(char * buff){
   #ifdef SQL
   int direction = dr.getDirection();
+  char bf[25];
+  snprintf(bf, 25, "product %s going %d", buff, direction);
+  website.log(bf);
   if (direction != 0){
     Serial.println("writing to dbs");
     sql.setArtikel(buff, direction > 0);
@@ -238,12 +242,14 @@ void setup() {
   lcd.clear();
   lcd.print("writing in");
   lcd.setCursor(0,1);
-  for (int i = 5; i > 0; i--){
+  for (int i = 3; i > 0; i--){
     lcd.print(i);
-    delay(100);
+    delay(1000);
   }
   uint8_t write_buffer[4] = {0};
-  write_buffer[3] = 0b00000000;
+  write_buffer[3] = '1';
+  write_buffer[2] = '0';
+  write_buffer[1] = '0';
   write_buffer[0]  = 0b10000000; //user starts with 1
   //hardcode for program to chip
   lcd.clear();
@@ -301,8 +307,7 @@ void loop() {
     }
     //card scanned is an user
     char buff[4];
-    snprintf(buff, 4, "%d%d%d", read_buffer[1], read_buffer[2], read_buffer[3]);
-    
+    snprintf(buff, 4, "%c%c%c", read_buffer[1], read_buffer[2], read_buffer[3]);
     if (read_buffer[0] >> 7 == 1){
       Serial.println("user scanned checking dbs");
       website.log("user has scanned card");      
@@ -310,7 +315,7 @@ void loop() {
 
     }
     //card scanned is a product
-    if (read_buffer[0] >> 7 == 0){
+    if (dr.open && read_buffer[0] >> 7 == 0){
       Serial.println("product scanned getting direction");
       scanArtikel(buff);
     }

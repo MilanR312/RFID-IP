@@ -22,5 +22,16 @@
     {
         devices = tcp.getConnectionList();
     }
-
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        devices = tcp.getConnectionList();
+        if (firstRender)
+            devices.Values.ToList().ForEach((esp) => esp.updateLogPage=notifyChange);
+    }
+    public async void notifyChange(){
+        await InvokeAsync(() =>{
+            Console.WriteLine("updating log");
+            StateHasChanged();
+        });
+    }
 }

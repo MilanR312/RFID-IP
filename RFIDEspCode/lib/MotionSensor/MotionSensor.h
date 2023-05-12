@@ -23,7 +23,7 @@ public:
     void sense()
     {
 
-        if (digitalRead(pin) == HIGH)
+        if (!digitalRead(pin))
         {
             pass = true;
             currenttime = xx_time_get_time();

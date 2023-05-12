@@ -4,7 +4,6 @@
 extern tcpClient website;
 
 class Door{
-    bool open = false;
     MotionSensor m1;
     MotionSensor m2;
 
@@ -15,6 +14,7 @@ class Door{
 
     int prev;
     public:
+    bool open = false;
 
     bool forcedOpen = false;
     bool isAllowedEntry = false;

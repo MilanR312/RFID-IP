@@ -24,7 +24,8 @@ public class esp32V2{
 
     public FixedSizedQueue<string> logs = new(50);
 
-    public Action? stateHasChanged;
+    public Action? updateDevicePage;
+    public Action? updateLogPage;
 
     public string status;
     public List<string> statusbutton;
@@ -39,15 +40,15 @@ public class esp32V2{
 
         registerCallback(state.NAME, result => {
             this.name = result;
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.LOCATION, result => {
             this.location = result;
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.LOGIN, result => {
             this.latestLogin = result;
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.BUTTON, result => {
             //read data bit
@@ -59,7 +60,7 @@ public class esp32V2{
 
             statusbutton[index] = toColor(disconnected ? 1 : 2-2*val);
 
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.ENABLED, result => {
             //0 == on
@@ -67,11 +68,11 @@ public class esp32V2{
             //2 == disabled
             int val = result.ToCharArray()[0] - '0';
             status = toColor(val);
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.LOG, result => {
             logs.Enqueue(result);
-            if (stateHasChanged != null) stateHasChanged();
+            if (updateLogPage != null) updateLogPage();
         });
 
         Task.Run(async () => {

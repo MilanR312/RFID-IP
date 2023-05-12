@@ -109,7 +109,7 @@
         devices = tcp.getConnectionList().Values.ToList();
 
         if (firstRender){
-            devices.ForEach(d => d.stateHasChanged=notifyChange);
+            devices.ForEach(d => d.updateDevicePage=notifyChange);
             foreach(var dev in devices){
                 await dev.updateData();
             }
