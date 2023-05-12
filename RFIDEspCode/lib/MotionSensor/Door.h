@@ -18,6 +18,8 @@ class Door
 public:
     bool open = false;
     bool isOpeningOrClosing = false;
+    bool isOpening = false;
+    bool isClosing = false;
     int tries = 0;
     bool forcedOpen = false;
     bool isAllowedEntry = false;
@@ -52,9 +54,8 @@ public:
             {
                 open = false;                // zeggen dat de deur niet open is
                 isOpeningOrClosing = true;   // zeggen dat de deur aan het openen is
-                digitalWrite(deurPin, HIGH); // de deur weer open zetten
                 tries++;
-                delay(1000); // seconde wachten
+                delay(50); // 50 ms wachten
             }
             else if (digitalRead(deurSensPin) == LOW && isOpeningOrClosing)
             {              // als de deur uiteindelijk geopend is
@@ -66,9 +67,15 @@ public:
             else
             {
                 tries++;
-                if (tries >= 5)
-                { // meer dan 5 keer ni gelukt -> error printen
+                if (tries >= 100)
+                { // meer dan 5 seconden keer ni gelukt -> error printen
                     lcd.print("deur wilt niet openen");
+                    website.send(NAME, "Door malfunction");
+                    website.send(LOG, "Fatale error bij deur openen: weigert te openen");
+                    website.send(ENABLED, "2");
+                    while (true){
+                        lcd.print("Fatale error: deur vast");
+                    }
                 }
             }
         }
@@ -91,7 +98,7 @@ public:
                     isOpeningOrClosing = true;  // zeggen dat de deur aan het sluiten
                     digitalWrite(deurPin, LOW); // de deur weer dicht doen
                     tries++;
-                    delay(1000); // seconde wachten
+                    delay(50); // 50 ms wachten
                 }
                 else if (digitalRead(deurSensPin) == HIGH && isOpeningOrClosing)
                 {              // als de deur uiteindelijk dicht is
@@ -101,9 +108,15 @@ public:
                 else
                 {
                     tries++;
-                    if (tries >= 5)
+                    if (tries >= 100)
                     { // meer dan 5 keer ni gelukt -> error printen
                         lcd.print("deur wilt niet sluiten");
+                        website.send(NAME, "Door malfunction");
+                        website.send(LOG, "Fatale error bij deur sluiten: weigert te slutien");
+                        website.send(ENABLED, "2");
+                        while (true){
+                            lcd.print("Fatale error: deur vast");
+                        }
                     }
                 }
                 isAllowedEntry = false;
@@ -111,8 +124,7 @@ public:
         }
     }
 
-    int
-    getDirection()
+    int getDirection()
     {
         int out = 0;
         if (m1.getTime() > m2.getTime())
@@ -120,5 +132,73 @@ public:
         if (m2.getTime() > m1.getTime())
             out = -1;
         return out;
+    }
+
+    void openingSequence(){
+        website.log("person detected at door");
+        lcd.print("De deur wordt geopend");
+        website.log("opening door");
+        digitalWrite(deurPin, HIGH);
+        if (digitalRead(deurSensPin) == HIGH && !isOpening) // Blijkt dat de deur toch nog dicht is en ze is nog niet aant openen
+        {
+            open = false;                // zeggen dat de deur niet open is
+            isOpening = true;   // zeggen dat de deur aan het openen is
+            tries++;
+            delay(50); // 50 ms wachten
+        }
+        else if (digitalRead(deurSensPin) == LOW && isOpening)
+        {              // als de deur uiteindelijk geopend is
+            tries = 0; // aantal tries resetten
+            open = true;
+            gettimeofday(&door_last_opened, NULL); // tijd van opening onthouden
+        }
+        else
+        {
+            tries++;
+            if (tries >= 100)
+            { // meer dan 5 seconden keer ni gelukt -> error printen
+                lcd.print("deur wilt niet openen");
+                website.send(NAME, "Door malfunction");
+                website.send(LOG, "Fatale error bij deur openen: weigert te openen");
+                website.send(ENABLED, "2");
+                while (true){
+                    lcd.print("Fatale error: deur vast");
+                }
+            }
+        }
+    }
+
+    void closingSequence(){
+        website.send(LOG, "closing door");
+        digitalWrite(deurPin, LOW);
+
+        if (digitalRead(deurSensPin) == LOW && !isClosing) // Blijkt dat de deur toch nog open is en ze is nog aant dichtgaan is
+        {
+            open = true;                // zeggen dat de deur niet open is
+            isOpeningOrClosing = true;  // zeggen dat de deur aan het sluiten
+            digitalWrite(deurPin, LOW); // de deur weer dicht doen
+            tries++;
+            delay(50); // 50 ms wachten
+        }
+        else if (digitalRead(deurSensPin) == HIGH && isClosing)
+        {              // als de deur uiteindelijk dicht is
+            tries = 0; // aantal tries resetten
+            open = false;
+        }
+        else
+        {
+            tries++;
+            if (tries >= 100)
+            { // meer dan 5 keer ni gelukt -> error printen
+                lcd.print("deur wilt niet sluiten");
+                website.send(NAME, "Door malfunction");
+                website.send(LOG, "Fatale error bij deur sluiten: weigert te slutien");
+                website.send(ENABLED, "2");
+                while (true){
+                    lcd.print("Fatale error: deur vast");
+                }
+            }
+        }
+        isAllowedEntry = false;
     }
 };
