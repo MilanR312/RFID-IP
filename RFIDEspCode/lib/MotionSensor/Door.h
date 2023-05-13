@@ -10,19 +10,30 @@ class Door
 
     int deurSensPin;
     int deurPin;
-    struct timeval door_last_opened;
+    struct timeval tv_now;
+    struct timeval tim1;    // hoelang het duurt om deur te openen
+    struct timeval tim2;    // hoelang de deur open is
     void (*callback)(void);
+
+    int gemiddelde_opening_time;    // in milliseconden
+    int aantal_openingen;           
+    int opening_time_sum;
+
+    int64_t timevalue1;
+    int64_t timevalue2;
+    int64_t timedif;
 
     int prev;
 
 public:
     bool open = false;
-    bool isOpeningOrClosing = false;
     bool isOpening = false;
     bool isClosing = false;
     int tries = 0;
     bool forcedOpen = false;
     bool isAllowedEntry = false;
+    bool tim1_running = false;
+    bool tim2_running = false;
 
     Door(int pin1, int pin2, int deurSens, int deur)
         : m1(pin1), m2(pin2), deurPin(deur), deurSensPin(deurSens)
@@ -30,8 +41,7 @@ public:
         pinMode(deurSens, INPUT);
         pinMode(deur, OUTPUT);
     }
-    void loop()
-    {
+    void loop(){
         if (forcedOpen)
         {
             digitalWrite(deurPin, HIGH);
@@ -40,86 +50,92 @@ public:
         if (!isAllowedEntry)
         {
             digitalWrite(deurPin, LOW);
+            lcd.print("Geen toegang");
             return;
         }
         m1.sense();
         m2.sense();
-        if (!digitalRead(m1.pin) || !digitalRead(m2.pin)) // wanneer iemand aant wachten is op opening vd deur
+
+        if ((!digitalRead(m1.pin) || (!digitalRead(m2.pin) && isAllowedEntry)) && digitalRead(deurSensPin) == HIGH && !open) // wanneer iemand aant wachten is op opening vd deur
         {
             website.log("person detected at door");
-            lcd.print("De deur wordt geopend");
             website.log("opening door");
             digitalWrite(deurPin, HIGH);
-            if (digitalRead(deurSensPin) == HIGH && !isOpeningOrClosing) // Blijkt dat de deur toch nog dicht is en ze is nog niet aant openen
-            {
-                open = false;                // zeggen dat de deur niet open is
-                isOpeningOrClosing = true;   // zeggen dat de deur aan het openen is
-                tries++;
-                delay(50); // 50 ms wachten
-            }
-            else if (digitalRead(deurSensPin) == LOW && isOpeningOrClosing)
-            {              // als de deur uiteindelijk geopend is
-                tries = 0; // aantal tries resetten
-                open = true;
-                isOpeningOrClosing = false;
-                gettimeofday(&door_last_opened, NULL); // tijd van opening onthouden
-            }
-            else
-            {
-                tries++;
-                if (tries >= 100)
-                { // meer dan 5 seconden keer ni gelukt -> error printen
-                    lcd.print("deur wilt niet openen");
-                    website.send(NAME, "Door malfunction");
-                    website.send(LOG, "Fatale error bij deur openen: weigert te openen");
-                    website.send(ENABLED, "2");
-                    while (true){
-                        lcd.print("Fatale error: deur vast");
-                    }
-                }
+            isOpening = true;
+            if (!tim1_running){
+                gettimeofday(&tim1, NULL);
+                tim1_running = true;
+                lcd.print("De deur wordt geopend");
             }
         }
 
-        if (open)
-        {
-            struct timeval tv_now;
+        else if (isOpening){
+            // zeker zijn dat de deur blijft openen
+            digitalWrite(deurPin, HIGH);
+            // tijd calculations uitvoeren
             gettimeofday(&tv_now, NULL);
-            // all time in microSecons
-            int64_t time_curr = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
-            int64_t time_old = (int64_t)door_last_opened.tv_sec * 1000000L + (int64_t)door_last_opened.tv_usec;
-            if (time_curr - time_old > 10000000)
-            { // 10 seconds
-                website.send(LOG, "closing door");
-                digitalWrite(deurPin, LOW);
+            timevalue1 = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
+            timevalue2 = (int64_t)tim1.tv_sec * 1000000L + (int64_t)tim1.tv_usec;
+            timedif = (timevalue1-timevalue2)/1000;
+            // checken of de deur snel genoeg open ging
+            if (aantal_openingen > 10 && timedif > (gemiddelde_opening_time + 10000)){
+                if (digitalRead(m1.pin) || digitalRead(m2.pin)){
+                    website.send(LOG, "Deur openen duurde minstens 10 seconden langer dan verwacht: kijk deur na");
+                    website.send(ENABLED, "2");
+                }
+            }
+            if (digitalRead(deurSensPin) == LOW){
+                // bools juist zetten
+                isOpening = false;
+                open = true;
+                tim1_running = false;
+                opening_time_sum += timedif;
+                aantal_openingen++;
+                gemiddelde_opening_time = opening_time_sum/aantal_openingen;
+                website.send(LOG, "Deur volledig geopend: start timer voor sluiten");
+            }
+        }
 
-                if (digitalRead(deurSensPin) == LOW && !isOpeningOrClosing) // Blijkt dat de deur toch nog open is en ze is nog aant dichtgaan is
-                {
-                    open = true;                // zeggen dat de deur niet open is
-                    isOpeningOrClosing = true;  // zeggen dat de deur aan het sluiten
-                    digitalWrite(deurPin, LOW); // de deur weer dicht doen
-                    tries++;
-                    delay(50); // 50 ms wachten
+        else if (open){
+            // all time in microSecons
+            if (!tim2_running){
+                gettimeofday(&tim2, NULL);
+                tim2_running = true;
+                lcd.print("De deur sluit binnen 15 seconden");
+            }
+
+            if (digitalRead(m1.pin) || digitalRead(m2.pin)){
+                gettimeofday(&tim2, NULL);
+                lcd.print("De deur sluit binnen 15 seconden");
+            }
+
+            gettimeofday(&tv_now, NULL);
+            timevalue1 = (int64_t)tv_now.tv_sec * 1000000L + (int64_t)tv_now.tv_usec;
+            timevalue2 = (int64_t)tim2.tv_sec * 1000000L + (int64_t)tim2.tv_usec;
+            timedif = (timevalue1-timevalue2)/1000;
+
+
+            if (timedif > 15000){
+                website.send(LOG, "closing door");
+                lcd.print("Deur start met sluiten");
+                digitalWrite(deurPin, LOW);
+                isClosing = true;
+            }
+
+            if (timedif > (15000 + gemiddelde_opening_time + 10000)){
+                if (digitalRead(deurSensPin) == LOW){
+                    website.send(LOG, "Fatale error bij deur sluiten. Shutting down system");
+                    website.send(NAME, "Door malfunction");
+                    website.send(ENABLED, "2");
+                    lcd.print("Error bij deur sluiten");
+                    while (true){}
                 }
-                else if (digitalRead(deurSensPin) == HIGH && isOpeningOrClosing)
-                {              // als de deur uiteindelijk dicht is
-                    tries = 0; // aantal tries resetten
+                else{
+                    isAllowedEntry = false;
                     open = false;
+                    tim2_running = false;
+                    website.send(LOG, "Deur zou nu gesloten moeten zijn");
                 }
-                else
-                {
-                    tries++;
-                    if (tries >= 100)
-                    { // meer dan 5 keer ni gelukt -> error printen
-                        lcd.print("deur wilt niet sluiten");
-                        website.send(NAME, "Door malfunction");
-                        website.send(LOG, "Fatale error bij deur sluiten: weigert te slutien");
-                        website.send(ENABLED, "2");
-                        while (true){
-                            lcd.print("Fatale error: deur vast");
-                        }
-                    }
-                }
-                isAllowedEntry = false;
             }
         }
     }
@@ -132,73 +148,5 @@ public:
         if (m2.getTime() > m1.getTime())
             out = -1;
         return out;
-    }
-
-    void openingSequence(){
-        website.log("person detected at door");
-        lcd.print("De deur wordt geopend");
-        website.log("opening door");
-        digitalWrite(deurPin, HIGH);
-        if (digitalRead(deurSensPin) == HIGH && !isOpening) // Blijkt dat de deur toch nog dicht is en ze is nog niet aant openen
-        {
-            open = false;                // zeggen dat de deur niet open is
-            isOpening = true;   // zeggen dat de deur aan het openen is
-            tries++;
-            delay(50); // 50 ms wachten
-        }
-        else if (digitalRead(deurSensPin) == LOW && isOpening)
-        {              // als de deur uiteindelijk geopend is
-            tries = 0; // aantal tries resetten
-            open = true;
-            gettimeofday(&door_last_opened, NULL); // tijd van opening onthouden
-        }
-        else
-        {
-            tries++;
-            if (tries >= 100)
-            { // meer dan 5 seconden keer ni gelukt -> error printen
-                lcd.print("deur wilt niet openen");
-                website.send(NAME, "Door malfunction");
-                website.send(LOG, "Fatale error bij deur openen: weigert te openen");
-                website.send(ENABLED, "2");
-                while (true){
-                    lcd.print("Fatale error: deur vast");
-                }
-            }
-        }
-    }
-
-    void closingSequence(){
-        website.send(LOG, "closing door");
-        digitalWrite(deurPin, LOW);
-
-        if (digitalRead(deurSensPin) == LOW && !isClosing) // Blijkt dat de deur toch nog open is en ze is nog aant dichtgaan is
-        {
-            open = true;                // zeggen dat de deur niet open is
-            isOpeningOrClosing = true;  // zeggen dat de deur aan het sluiten
-            digitalWrite(deurPin, LOW); // de deur weer dicht doen
-            tries++;
-            delay(50); // 50 ms wachten
-        }
-        else if (digitalRead(deurSensPin) == HIGH && isClosing)
-        {              // als de deur uiteindelijk dicht is
-            tries = 0; // aantal tries resetten
-            open = false;
-        }
-        else
-        {
-            tries++;
-            if (tries >= 100)
-            { // meer dan 5 keer ni gelukt -> error printen
-                lcd.print("deur wilt niet sluiten");
-                website.send(NAME, "Door malfunction");
-                website.send(LOG, "Fatale error bij deur sluiten: weigert te slutien");
-                website.send(ENABLED, "2");
-                while (true){
-                    lcd.print("Fatale error: deur vast");
-                }
-            }
-        }
-        isAllowedEntry = false;
     }
 };

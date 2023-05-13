@@ -1,0 +1,25 @@
+- motion aan binnenkant laag
+	--> start timer1
+	--> write deurpin hoog: deur moet openen
+	--> hou tijd bij vanaf motionsensor eerste keer high geeft
+		--> als de tijd te lang wordt zonder dat de deursens de deur als "open" ziet --> error
+
+- scannen buitenkant + motion buitenkant laag:
+	--> start timer1
+	--> write deurpin hoog: deur moet openen
+	--> hou tijd bij vanaf motionsensor eerste keer high geeft
+		--> als de tijd te lang wordt zonder dat de deursens de deur als "open" ziet --> error
+
+- na een bepaalde tijd moet de deur weer sluiten
+	--> als de deursens de deur als open ziet
+		--> meet tijd op sinds timer1
+		--> vergelijk deze tijd met gemiddelde
+		--> X seconden langer dan gemiddelde: onderweg een fout --> error
+		--> start timer2
+	--> als current_time - timer2 bepaalde waarde haalt: start sluiten
+		--> als deusens laag blijft: sluiten gefaald --> error
+
+- als de deursensor te lang laag is --> deur is geblokkeerd
+	--> check sensoren (misschien is de motion nog high: deur moet dus wel nog open zijn)
+	--> indien andere sensoren LOW: roep error op
+
