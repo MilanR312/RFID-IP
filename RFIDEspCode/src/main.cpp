@@ -6,8 +6,8 @@
 #include "sql.h"
 #include "Door.h"
 #include <cstdio>
-//const char * ssid = "IoTdevices";
-//const char * password = "FGwrdsa=ghaR";
+const char * ssid = "IoTdevices";
+const char * password = "FGwrdsa=ghaR";
 
 
 
@@ -170,7 +170,8 @@ void setup() {
   lcd.begin(16,2);
   lcd.clear();
   lcd.home();
-
+  pinMode(6, OUTPUT);
+  digitalWrite(6, LOW);
 
   lcd.print("starting up");
 
