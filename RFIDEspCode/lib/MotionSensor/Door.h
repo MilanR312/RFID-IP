@@ -125,7 +125,8 @@ public:
             timevalue2 = (int64_t)tim2.tv_sec * 1000000L + (int64_t)tim2.tv_usec;
             timedif = (timevalue1 - timevalue2) / 1000;
 
-            sprintf(buffer, "Deur sluit in %2d seconden\0", 15 - (timedif/1000) );
+            
+            sprintf(buffer, "Deur sluit in %2d seconden\0", max(0, 15 - round((timedif/1000))) );
             lcd.clear();
             lcd.print(buffer);
             delay(1000);
@@ -184,5 +185,14 @@ public:
         if (m2.getTime() > m1.getTime())
             out = -1;
         return out;
+    }
+
+    int max(int a, int b){
+        if (a>b){
+            return a;
+        }
+        else {
+            return b;
+        }
     }
 };
