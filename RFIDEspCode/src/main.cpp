@@ -186,7 +186,7 @@ void setup()
   pinMode(16, OUTPUT);
   digitalWrite(16, LOW);
 
-  lcd.print("starting up");
+  lcd.print("Starting up");
 
   delay(1000);
   lcd.clear();
@@ -197,20 +197,20 @@ void setup()
 
   uint8_t tryAmount = 0;
 
-  printBar("wifi connect", tryAmount);
+  printBar("WiFi connect", tryAmount);
   while (WiFi.status() != WL_CONNECTED)
   {
     Serial.println(WiFi.status());
     tryAmount++;
-    printBar("wifi connect", tryAmount);
+    printBar("WiFi connect", tryAmount);
     delay(500);
   }
   lcd.clear();
-  lcd.print("Wifi connected");
+  lcd.print("WiFi connected");
   delay(1000);
 #ifdef RFID
   lcd.clear();
-  lcd.print("connect rfid now");
+  lcd.print("Connecting RFID now");
   delay(5000);
 
   // rx tx
@@ -277,7 +277,7 @@ void setup()
   delay(1000);
 #endif
   lcd.clear();
-  lcd.print("starting main loop");
+  lcd.print("Starting main   loop");
   delay(1000);
 }
 
@@ -302,7 +302,7 @@ void loop()
       strncpy(website.lastLoggedInUser, "OVERRIDE", 32);
 
       lcd.clear();
-      lcd.print("forced open");
+      lcd.print("Forced open");
       // website.send(LOGIN, website.lastLoggedInUser);
 
       delay(1000);
