@@ -72,7 +72,7 @@ public:
                 gettimeofday(&tim1, NULL);
                 tim1_running = true;
                 lcd.clear();
-                lcd.print("De deur wordt geopend");
+                lcd.print("De deur wordt   geopend");
                 delay(1000);
             }
         }
@@ -117,7 +117,7 @@ public:
                 gettimeofday(&tim2, NULL);
                 tim2_running = true;
                 lcd.clear();
-                lcd.print("De deur sluit binnen 15 seconden");
+                lcd.print("Deur sluit in 15 seconden");
                 delay(1000);
             }
 
@@ -131,9 +131,8 @@ public:
                 gettimeofday(&tim2, NULL);
                 website.log("Nieuwe persoon gescand");
                 lcd.clear();
-                lcd.print("De deur sluit binnen 15 seconden");
+                lcd.print("Deur sluit in 15 seconden");
                 delay(1000);
-                website.log("stuck in loop?");
                 digitalWrite(deurPin, HIGH);
                 isClosing = false;
             }
@@ -142,7 +141,7 @@ public:
             {
                 website.send(LOG, "closing door");
                 lcd.clear();
-                lcd.print("Deur start met sluiten");
+                lcd.print("Deur start met  sluiten");
                 delay(1000);
                 digitalWrite(deurPin, LOW);
                 isClosing = true;
@@ -156,7 +155,7 @@ public:
                     website.send(NAME, "Door malfunction");
                     website.send(ENABLED, "2");
                     lcd.clear();
-                    lcd.print("Error bij deur sluiten");
+                    lcd.print("Error bij deur  sluiten");
                     website.log("stuck in while");
                     delay(1000);
                     while (true)
