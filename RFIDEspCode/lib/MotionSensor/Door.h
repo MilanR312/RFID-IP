@@ -25,6 +25,8 @@ class Door
 
     int prev;
 
+    char buffer[33];
+
 public:
     bool open = false;
     bool isOpening = false;
@@ -59,7 +61,7 @@ public:
         m1.sense();
         m2.sense();
 
-        if ((!digitalRead(m1.pin) || (!digitalRead(m2.pin) && isAllowedEntry)) && digitalRead(deurSensPin) == LOW && !open && !isOpening) // wanneer iemand aant wachten is op opening vd deur
+        if ((!digitalRead(m1.pin) || (!digitalRead(m2.pin) && isAllowedEntry)) && !digitalRead(deurSensPin) == LOW && !open && !isOpening) // wanneer iemand aant wachten is op opening vd deur
         {
             website.log("person detected at door");
             website.log("opening door");
@@ -95,7 +97,7 @@ public:
                     website.send(ENABLED, "2");
                 }
             }
-            if (digitalRead(deurSensPin) == HIGH)
+            if (!digitalRead(deurSensPin) == HIGH)
             {
                 // bools juist zetten
                 isOpening = false;
@@ -116,9 +118,6 @@ public:
                 website.log("Timer 2 gestart");
                 gettimeofday(&tim2, NULL);
                 tim2_running = true;
-                lcd.clear();
-                lcd.print("Deur sluit in 15 seconden");
-                delay(1000);
             }
 
             gettimeofday(&tv_now, NULL);
@@ -126,13 +125,16 @@ public:
             timevalue2 = (int64_t)tim2.tv_sec * 1000000L + (int64_t)tim2.tv_usec;
             timedif = (timevalue1 - timevalue2) / 1000;
 
+            sprintf(buffer, "Deur sluit in %2d seconden\0", 15 - (timedif/1000) );
+            lcd.clear();
+            lcd.print(buffer);
+            delay(1000);
+            memset( buffer , '\0' , strlen(buffer) );
+
             if ((!digitalRead(m1.pin) || !digitalRead(m2.pin)) && timedif > 2500) // als een van de motion sensoren iets opvangt en na 5 sec
             {
                 gettimeofday(&tim2, NULL);
                 website.log("Nieuwe persoon gescand");
-                lcd.clear();
-                lcd.print("Deur sluit in 15 seconden");
-                delay(1000);
                 digitalWrite(deurPin, HIGH);
                 isClosing = false;
             }
@@ -149,7 +151,7 @@ public:
 
             if (timedif > (15000 + gemiddelde_opening_time + 10000))
             {
-                if (digitalRead(deurSensPin) == HIGH)
+                if (!digitalRead(deurSensPin) == HIGH)
                 {
                     website.send(LOG, "Fatale error bij deur sluiten");
                     website.send(NAME, "Door malfunction");
