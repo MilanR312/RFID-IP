@@ -22,7 +22,7 @@ public class esp32V2{
     public int[] buttons = new int[2];
     public bool disconnected = false;
 
-    public FixedSizedQueue<string> logs = new(50);
+    public FixedSizedQueue<(DateTime, string)> logs = new(30);
 
     public Action? updateDevicePage;
     public Action? updateLogPage;
@@ -71,7 +71,8 @@ public class esp32V2{
             if (updateDevicePage != null) updateDevicePage();
         });
         registerCallback(state.LOG, result => {
-            logs.Enqueue(result);
+            
+            logs.Enqueue((DateTime.Now,result));
             if (updateLogPage != null) updateLogPage();
         });
 
@@ -143,8 +144,8 @@ public class esp32V2{
     }
     public string log(){
         string g = "";
-        foreach(string text in logs){
-            g += text.TrimEnd() + "<br>";
+        foreach(var textStruct in logs){
+            g += textStruct.Item1.ToUniversalTime() + "   " + textStruct.Item2.TrimEnd() + "<br>";
         }
         return g;
     }

@@ -64,7 +64,9 @@ class postgresESP{
             sprintf(queryBuffer, "UPDATE artikel SET beschikbaar = beschikbaar + 1 where code like '%s';", pkey);
         else 
             sprintf(queryBuffer, "UPDATE artikel SET beschikbaar = beschikbaar - 1 WHERE code like '%s';", pkey);
-        website.log(queryBuffer+60);
+        char buff[25];
+        snprintf(buff, 25, "prod %s went %s",pkey, add ? "inside" : "outside");
+        website.log(buff);
         connection.execute(queryBuffer);
     }
 

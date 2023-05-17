@@ -20,10 +20,6 @@ build_property._RazorSourceGeneratorDebug =
 build_metadata.AdditionalFiles.TargetPath = QXBwLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
 
-[/home/milan/Desktop/RFID-IP/webApp/Pages/Home.razor]
-build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
-build_metadata.AdditionalFiles.CssScope = 
-
 [/home/milan/Desktop/RFID-IP/webApp/Pages/Log.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvTG9nLnJhem9y
 build_metadata.AdditionalFiles.CssScope = 
@@ -43,6 +39,10 @@ build_metadata.AdditionalFiles.CssScope = b-w6srgfrzh8
 [/home/milan/Desktop/RFID-IP/webApp/Pages/Devices.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvRGV2aWNlcy5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = b-rvs7wk2tvz
+
+[/home/milan/Desktop/RFID-IP/webApp/Pages/Home.razor]
+build_metadata.AdditionalFiles.TargetPath = UGFnZXMvSG9tZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = b-l9r77t9z7s
 
 [/home/milan/Desktop/RFID-IP/webApp/Pages/Users.razor]
 build_metadata.AdditionalFiles.TargetPath = UGFnZXMvVXNlcnMucmF6b3I=
