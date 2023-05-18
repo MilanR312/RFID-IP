@@ -6,8 +6,10 @@
 #include "sql.h"
 #include "Door.h"
 #include <cstdio>
-const char *ssid = "IoTdevices";
-const char *password = "FGwrdsa=ghaR";
+
+const char * ssid = "IoTdevices";
+const char * password = "FGwrdsa=ghaR";
+
 
 #define RFID
 #define WEBSITE
@@ -27,9 +29,11 @@ Array<uint8_t, 4> read_buffer;
 
 Unit_UHF_RFID rfid;
 
+//buiten binnen
 Door dr(32, 33, 26, 25);
 // rs en D4-D7
 LiquidCrystal lcd(4, 18, 19, 21, 22, 23);
+
 
 // print text or new . and reset if > 16
 void printBar(const char *message1, uint8_t &num)

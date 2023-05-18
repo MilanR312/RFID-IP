@@ -17,13 +17,15 @@
             </NavLink>
         </div>
         
-        <div class="item">
-            <NavLink href="log" style="text-decoration: none">
-                <p class="navText"> Log </p>
-            </NavLink>
-        </div>
+        
         
         @if(currentUser != null && currentUser.functie == "dev"){
+            <div class="item">
+                <NavLink href="log" style="text-decoration: none">
+                    <p class="navText"> Log </p>
+                </NavLink>
+            </div>
+
             <div class="item">
                 <NavLink href="devices" style="text-decoration: none">
                     <p class="navText">
@@ -100,7 +102,7 @@
     private void logOut(){
         storage.DeleteAsync("user");
         currentUser = null;
-        nav.NavigateTo("/",true);
+        nav.NavigateTo("/");
     }
 
 }

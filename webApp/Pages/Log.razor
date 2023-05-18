@@ -2,13 +2,12 @@
 @inject ITCPService tcp
 
 <PageTitle>log</PageTitle>
-<select class="form-control" @bind="@selected" style="width:150px">
+<select class="form-control" @bind="@selected" style="width:150px; margin-bottom: 20px">
          @foreach (var esp in devices)
          {
                  <option value=@esp.Key>@esp.Key</option>
          }
 </select>
-<p>@selected</p>
 @if(devices != null && devices.ContainsKey(selected)){
 <div>
     @((MarkupString) devices[selected].log())
