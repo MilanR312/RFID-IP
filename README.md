@@ -12,3 +12,8 @@ Contains a website to control the esp and the schematics to rebuild.
 - [RFIDEspCode](RFIDEspCode) to run the esp32
 - [webApp](webApp) server using blazor
 # 
+
+## credits
+
+- [LiquidCrystal by Hans-Christoph Steiner. Arduino LLC](https://github.com/arduino-libraries/LiquidCrystal)
+- [UART by M5Stack](https://github.com/m5stack/M5Unit-UHF-RFID)
